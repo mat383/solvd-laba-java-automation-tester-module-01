@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class SortTester {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         // generate random array
         Random rand = new Random();
         int[] array = new int[100];
-        for(int i = 0; i < array.length; ++i) {
+        for (int i = 0; i < array.length; ++i) {
             array[i] = rand.nextInt();
         }
 
@@ -22,7 +22,7 @@ public class SortTester {
         assert SortTester.isSorted(array);
 
         System.out.println("\n* Sorted array:");
-        for(int element : array) {
+        for (int element : array) {
             System.out.printf("%d\n", element);
         }
     }
