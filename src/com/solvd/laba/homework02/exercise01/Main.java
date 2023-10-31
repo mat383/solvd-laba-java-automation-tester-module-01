@@ -27,7 +27,12 @@ public class Main {
         Entity contractorA = new Person("Contractor", "C");
         contractorA.addContract(
                 new SinglePaymentContract(caseStart, caseEnd,
-                        "Hired PI to investigate r", new BigDecimal("3.14")));
+                        "Hired PI to investigate r", new BigDecimal("-3.14")));
+
+	Entity clientA = new Person("Client", "A");
+	Contract clientContract = new PerHourContract(consultationStart.toLocalDate(), consultationEnd.toLocalDate(), "Standard rate contract with client",
+						      new BigDecimal("100"));
+	clientA.addContract(clientContract);
 
         ArrayList<Entity> entities = new ArrayList<Entity>();
         entities.add(new Person("John", "Smith"));
@@ -47,5 +52,14 @@ public class Main {
         for( Entity e : entities ) {
             System.out.println("- " + e.getFullName());
         }
+
+	System.out.println("Total cost for client:");
+	BigDecimal totalCosts = new BigDecimal(0);
+	for (Contract c : clientA.getContracts()) {
+	    totalCosts = totalCosts.add(c.calculateOwned(caseStart, caseEnd,
+							 consultationInOffice));
+	}
+	System.out.println(totalCosts);
+	
     }
 }

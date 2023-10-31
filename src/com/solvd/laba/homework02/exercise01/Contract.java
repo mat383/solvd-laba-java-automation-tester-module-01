@@ -3,6 +3,7 @@ package com.solvd.laba.homework02.exercise01;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
 
 
 public abstract class Contract {
@@ -34,6 +35,11 @@ public abstract class Contract {
      * @return amount of money owned
      */
     public abstract BigDecimal calculateOwned(LocalDate start, LocalDate end, List<ClockedTime> time);
+    public BigDecimal calculateOwned(LocalDate start, LocalDate end, ClockedTime time) {
+	ArrayList<ClockedTime> clockedList = new ArrayList<ClockedTime>();
+	clockedList.add(time);
+	return calculateOwned(start, end, clockedList);
+    }
 
     public boolean isActive() {
         return isActive(LocalDate.now());
