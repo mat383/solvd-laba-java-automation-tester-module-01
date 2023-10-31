@@ -40,8 +40,9 @@ public class Main {
                         "Hired PI to investigate r", new BigDecimal("-3.14")));
 
 	Entity clientA = new Person("Client", "A");
-	Contract clientContract = new PerHourContract(consultationStart.toLocalDate(), consultationEnd.toLocalDate(), "Standard rate contract with client",
-						      new BigDecimal("100"));
+	Contract clientContract = new PerHourContract(consultationStart.toLocalDate(),
+	        consultationEnd.toLocalDate(), "Standard rate contract with client",
+		new BigDecimal("100"));
 	clientA.addContract(clientContract);
 
         ArrayList<Entity> entities = new ArrayList<Entity>();
@@ -59,7 +60,7 @@ public class Main {
                 "Legal consultation", entities);
 
         System.out.println("entities:");
-        for( Entity e : entities ) {
+        for ( Entity e : entities ) {
             System.out.println("- " + e.getFullName());
         }
 
