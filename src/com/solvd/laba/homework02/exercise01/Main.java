@@ -16,11 +16,21 @@ public class Main {
         LocalDate caseStart = LocalDate.now().minusDays(12);
         LocalDate caseEnd   = LocalDate.now().plusDays(12);
 
+	ArrayList<ClockedTime> clockedTimes = new ArrayList<ClockedTime>();
+
         LocalDateTime consultationStart = LocalDateTime.of(2023, 10, 11, 11, 0);
         LocalDateTime consultationEnd = LocalDateTime.of(2023, 10, 11, 12, 0);
         ClockedTime consultationInOffice = new ClockedTime(consultationStart, consultationEnd,
                 "Initial consultation", false);
+	clockedTimes.add(consultationInOffice);
 
+        LocalDateTime courtStart = LocalDateTime.of(2023, 10, 13, 11, 0);
+        LocalDateTime courtEnd   = LocalDateTime.of(2023, 10, 13, 12, 0);
+        ClockedTime courtAppearance = new ClockedTime(courtStart, courtEnd,
+                "Court appearance", false);
+	clockedTimes.add(courtAppearance);
+
+	
         Entity workerA = new Person("Worker", "A");
         Entity workerB = new Person("Worker", "B");
         Entity workerC = new Person("Worker", "C");
@@ -57,7 +67,7 @@ public class Main {
 	BigDecimal totalCosts = new BigDecimal(0);
 	for (Contract c : clientA.getContracts()) {
 	    totalCosts = totalCosts.add(c.calculateOwned(caseStart, caseEnd,
-							 consultationInOffice));
+							 clockedTimes));
 	}
 	System.out.println(totalCosts);
 	
