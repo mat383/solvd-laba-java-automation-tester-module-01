@@ -45,7 +45,7 @@ public class Main {
 		new BigDecimal("100"));
 	clientA.addContract(clientContract);
 
-        ArrayList<Entity> entities = new ArrayList<Entity>();
+        ArrayList<Entity> entities = new ArrayList<>();
         entities.add(new Person("John", "Smith"));
         entities.add(new Person("Worker", "001"));
         entities.add(new Person("Worker", "002"));
