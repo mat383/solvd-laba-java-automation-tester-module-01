@@ -36,6 +36,19 @@ public class Main {
         consultation.setComplexity(1.3);
         caseA.addService(consultation);
 
+
+        TimeSpan researchATime = new TimeSpan(
+                LocalDateTime.of(2023, 11, 2,
+                        11, 0, 0),
+                LocalDateTime.of(2023, 11, 2,
+                        12, 0, 0));
+        LegalService research = new LegalService(LegalService.Type.RESEARCH,
+                consultationTime);
+        research.setDescription("Researching water claims");
+        research.setComplexity(2);
+        caseA.addService(research);
+
+
         Address courtAddress = new Address("Poland", "Warsaw", "00-123",
                 "Legal Street", "1a", "2b");
         LocalDateTime courtStart = LocalDateTime.of(2023, 11, 10, 12, 00, 00);
@@ -44,7 +57,7 @@ public class Main {
                 courtStart, courtEnd, courtAddress, "First Hearing", caseClients);
         caseA.addAppointment(courtHearing);
 
-        
+
         UI officeUI = new UI(office);
         officeUI.start();
 
