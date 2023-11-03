@@ -32,6 +32,7 @@ public class Main {
                         12, 0, 0));
         LegalService consultation = new LegalService(LegalService.Type.CONSULTATION,
                 consultationTime);
+        consultation.setDescription("Initial consultation");
         consultation.setComplexity(1.3);
         caseA.addService(consultation);
 

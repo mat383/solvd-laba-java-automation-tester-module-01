@@ -67,10 +67,20 @@ public class UI {
         System.out.println(legalCase.getDescription());
         System.out.println();
 
-        System.out.println("* Appointments");
+        System.out.println("** Appointments");
         for (Appointment appointment : legalCase.getAppointments()) {
-            System.out.println("- " + appointment.toString());
+            System.out.println("- " + appointment);
         }
+        System.out.println();
+
+        System.out.println("** Services provided");
+        for (LegalService service : legalCase.getServices()) {
+            System.out.println("- " + service);
+        }
+        System.out.println();
+
+        System.out.println("** Total cost: " + legalCase.totalPrice());
+        System.out.println();
     }
 
     protected void listCases(List<LegalCase> cases) {

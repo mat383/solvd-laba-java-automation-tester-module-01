@@ -51,6 +51,16 @@ public class LegalService {
         this.timeSpan = timeSpan;
     }
 
+    @Override
+    public String toString() {
+        return "(" + this.timeSpan.getStart() + " - " + this.getTimeSpan().getEnd() + ")"
+                + " " + this.type
+                + " " + this.description
+                + ((this.annotation != null && !this.annotation.isEmpty()) ? " (" + this.annotation + ")" : "")
+                + " complexity: " + this.complexity
+                + " price modifier: " + this.priceModifier;
+    }
+
 
     public Type getType() {
         return type;
