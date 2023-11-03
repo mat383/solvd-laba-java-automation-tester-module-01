@@ -43,19 +43,34 @@ public class UI {
                 case ACTION_QUIT:
                     System.out.println("quitting");
                     break;
+
                 case ACTION_DETAILS:
+                    if (office.getCases().size() < 1) {
+                        System.out.println("No cases");
+                        break;
+                    }
                     System.out.println("Showing case details");
                     int caseNumber = promptSelectNumericOption(
                             "Case number: ", 1, office.getCases().size());
                     caseDetailsView(office.getCases().get(caseNumber - 1));
                     break;
+
                 case ACTION_ADD_CASE:
                     System.out.println("Adding case");
                     this.office.addCase(createCase());
                     break;
+
                 case ACTION_REMOVE_CASE:
+                    if (office.getCases().size() < 1) {
+                        System.out.println("No cases");
+                        break;
+                    }
                     System.out.println("Removing case");
+                    int caseToDeleteNumber = promptSelectNumericOption(
+                            "Case number: ", 1, office.getCases().size());
+                    office.removeCase(office.getCases().get(caseToDeleteNumber - 1));
                     break;
+
                 default:
                     System.out.printf("Choice doesn't match any action: '%c'\n", selection);
             }
@@ -63,7 +78,7 @@ public class UI {
     }
 
     public void caseDetailsView(LegalCase legalCase) {
-        System.out.println("* Case details");
+        System.out.println("\n* Case details");
         System.out.println(legalCase.getDescription());
         System.out.println();
 

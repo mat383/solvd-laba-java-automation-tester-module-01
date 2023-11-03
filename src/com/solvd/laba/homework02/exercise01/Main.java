@@ -44,52 +44,9 @@ public class Main {
                 courtStart, courtEnd, courtAddress, "First Hearing", caseClients);
         caseA.addAppointment(courtHearing);
 
-        BigDecimal owned = caseA.totalPrice();
-        System.out.println("owned: " + owned.toString());
-
-        System.out.println("appointments: ");
-        for (Appointment a : caseA.getFutureAppointments()) {
-            System.out.println(a.getDetails());
-        }
-
-        System.out.println("\n---------\n");
+        
         UI officeUI = new UI(office);
         officeUI.start();
 
     }
-
-    private Entity generateClient() {
-        final String[] FIRST_NAMES = {
-                "James", " John", " Robert", " Michael", " William",
-                " David", " Richard", " Joseph", " Charles", " Thomas",
-                " Mary", " Patricia", " Jennifer", " Elizabeth", " Linda",
-                " Barbara", " Susan", " Margaret", " Jessica", " Sarah"
-        };
-        final String[] LAST_NAMES = {
-                "Smith", "Johnson", "Williams", "Brown", "Jones",
-                "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
-                "Hernandez", "Lopez", "Gonzales", "Wilson", "Anderson",
-                "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee",
-                "Perez", "Thompson", "White", "Harris", "Sanchez",
-                "Clark", "Ramirez", "Lewis", "Robinson", "Walker",
-                "Young", "Allen", "King", "Wright", "Scott", "Torres",
-                "Nguyen", "Hill", "Flores", "Green", "Adams", "Nelson",
-                "Baker", "Hall"
-        };
-        final String[] COMPANY_NAMES = {
-                "Luminous Dynamics", "Sapphire Industries",
-                "Majestic Innovations", "Spectrum Solutions",
-                "Elevate Enterprises", "Pinnacle Partners",
-                "Vantage Ventures", "Crest Capital",
-                "Horizon Holdings", "Catalyst Corporation"
-        };
-
-        // TODO make it random + randomly generate person or company
-        return new Person(FIRST_NAMES[0], LAST_NAMES[0]);
-    }
-
-    /*private Appointment generateAppointment() {
-        Address courtAddress = new Address("Poland", "Warsaw", "00-123",
-                "Legal Street", "1a", "2b");
-    }*/
 }
