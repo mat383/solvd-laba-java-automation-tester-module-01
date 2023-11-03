@@ -45,7 +45,7 @@ public class UI {
                     break;
 
                 case ACTION_DETAILS:
-                    if (office.getCases().size() < 1) {
+                    if (office.getCases().isEmpty()) {
                         System.out.println("No cases");
                         break;
                     }
@@ -61,7 +61,7 @@ public class UI {
                     break;
 
                 case ACTION_REMOVE_CASE:
-                    if (office.getCases().size() < 1) {
+                    if (office.getCases().isEmpty()) {
                         System.out.println("No cases");
                         break;
                     }
@@ -102,6 +102,8 @@ public class UI {
 
         System.out.println("** Total cost: " + legalCase.totalPrice());
         System.out.println();
+
+
     }
 
     protected void listCases(List<LegalCase> cases) {
