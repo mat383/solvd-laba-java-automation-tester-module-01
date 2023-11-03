@@ -82,6 +82,12 @@ public class UI {
         System.out.println(legalCase.getDescription());
         System.out.println();
 
+        System.out.println("** Clients");
+        for (Entity client : legalCase.getClients()) {
+            System.out.println("- " + client);
+        }
+        System.out.println();
+
         System.out.println("** Appointments");
         for (Appointment appointment : legalCase.getAppointments()) {
             System.out.println("- " + appointment);
