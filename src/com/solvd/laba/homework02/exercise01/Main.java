@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-
+        LegalOffice office = new LegalOffice();
 
         Entity clientA = new Person("Client", "A");
         Entity clientB = new Company("Company B");
@@ -21,6 +21,7 @@ public class Main {
                 BigDecimal.valueOf(400));
 
         LegalCase caseA = new LegalCase(caseContract, "Case of missing water");
+        office.addCase(caseA);
         caseA.addClient(clientA);
         caseA.addClient(clientB);
 
@@ -49,6 +50,11 @@ public class Main {
         for (Appointment a : caseA.getFutureAppointments()) {
             System.out.println(a.getDetails());
         }
+
+        System.out.println("\n---------\n");
+        UI officeUI = new UI(office);
+        officeUI.start();
+
     }
 
     private Entity generateClient() {

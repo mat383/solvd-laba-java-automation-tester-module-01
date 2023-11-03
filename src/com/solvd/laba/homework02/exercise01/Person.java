@@ -1,20 +1,32 @@
 package com.solvd.laba.homework02.exercise01;
 
+import java.util.Objects;
+
 public class Person extends Entity {
 
     private String firstName;
     private String lastName;
 
     // TODO add other constructors
-      public Person(String firstName, String lastName) {
-          super();
-          // TODO add checking for empty name string
-          if (firstName == null || lastName == null) {
-              throw new IllegalArgumentException("Neither firstName nor lastName can be null");
-          }
-          this.firstName = firstName;
-          this.lastName = lastName;
-      }
+    public Person(String firstName, String lastName) {
+        super();
+        // TODO add checking for empty name string
+        if (firstName == null || lastName == null) {
+            throw new IllegalArgumentException("Neither firstName nor lastName can be null");
+        }
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    @Override
+    public String toString() {
+        return this.firstName + " " + this.lastName;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.firstName, this.lastName);
+    }
 
     public String getFirstName() {
         return firstName;
@@ -38,10 +50,10 @@ public class Person extends Entity {
         this.lastName = lastName;
     }
 
-      @Override
+    @Override
     public String getFullName() {
-          return this.firstName + " " + this.lastName;
-      }
+        return this.firstName + " " + this.lastName;
+    }
 
 
 }

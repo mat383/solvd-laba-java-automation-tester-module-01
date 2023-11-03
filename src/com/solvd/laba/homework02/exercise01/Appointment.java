@@ -1,9 +1,7 @@
 package com.solvd.laba.homework02.exercise01;
 
-import java.nio.file.attribute.UserPrincipalLookupService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Appointment extends TimeSpan {
@@ -11,6 +9,7 @@ public class Appointment extends TimeSpan {
         COURT,
         CONSULTATION
     }
+
     private Appointment.Type type;
     private Address location;
     private String details;
@@ -23,6 +22,35 @@ public class Appointment extends TimeSpan {
         this.location = location;
         this.details = details;
         this.participants = new ArrayList<>(participants);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + getStart() + " - " + getEnd() + ")"
+                + " " + this.type
+                + " " + this.details
+                + " at " + this.location;
+    }
+
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Appointment)) {
+            return false;
+        }
+        Appointment other = (Appointment) obj;
+        if (this.type.equals(other.getType())
+                && this.location.equals(other.getLocation())
+                && this.details.equals(other.getDetails())
+                && this.participants.equals(other.getParticipants())) {
+            return true;
+        }
+
+        return false;
     }
 
     public Type getType() {
@@ -56,6 +84,7 @@ public class Appointment extends TimeSpan {
     public void addParticipant(Entity participant) {
         this.participants.add(participant);
     }
+
     public void removeParticipant(Entity participant) {
         this.participants.remove(participant);
     }

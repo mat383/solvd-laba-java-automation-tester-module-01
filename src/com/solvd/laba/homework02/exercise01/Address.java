@@ -1,5 +1,7 @@
 package com.solvd.laba.homework02.exercise01;
 
+import java.util.Objects;
+
 public class Address {
     private String country;
     private String city;
@@ -20,6 +22,46 @@ public class Address {
         if (!this.isAddresValid()) {
             throw new IllegalArgumentException("Passed address is invalid");
         }
+    }
+
+    @Override
+    public String toString() {
+        return this.country
+                + ", " + this.city
+                + " " + this.postalCode
+                + ", street: " + this.street
+                + " " + this.streetNumber
+                + " / " + this.apartmentNumber;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Address)) {
+            return false;
+        }
+        Address other = (Address) obj;
+        if (this.country.equals(other.getCountry())
+                && this.city.equals(other.getCity())
+                && this.postalCode.equals(other.getPostalCode())
+                && this.street.equals(other.getStreet())
+                && this.streetNumber.equals(other.getStreetNumber())
+                && this.apartmentNumber.equals(other.getApartmentNumber())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.country, this.city, this.postalCode,
+                this.street, this.streetNumber, this.apartmentNumber);
     }
 
     public String getCountry() {
