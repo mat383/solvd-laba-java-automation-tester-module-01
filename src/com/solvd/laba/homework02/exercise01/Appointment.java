@@ -7,16 +7,30 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Appointment extends TimeSpan {
+    public enum Type {
+        COURT,
+        CONSULTATION
+    }
+    private Appointment.Type type;
     private Address location;
     private String details;
     private ArrayList<Entity> participants;
 
-    public Appointment(LocalDateTime start, LocalDateTime end,
+    public Appointment(Appointment.Type type, LocalDateTime start, LocalDateTime end,
                        Address location, String details, List<Entity> participants) {
         super(start, end);
+        this.type = type;
         this.location = location;
         this.details = details;
         this.participants = new ArrayList<>(participants);
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public Address getLocation() {

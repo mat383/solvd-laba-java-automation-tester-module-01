@@ -1,51 +1,61 @@
 package com.solvd.laba.homework02.exercise01;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LegalCase {
+    Contract contract;
+    // TODO add case name
     String description;
     boolean open;
 
     /**
      * all entities related to case
      */
-    private ArrayList<Entity> entities;
-    private ArrayList<Appointment> appointments;
-    private ArrayList<ClockedTime> clockedTimes;
+    private final ArrayList<Entity> clients = new ArrayList<>();
+    private final ArrayList<Appointment> appointments = new ArrayList<>();
+    private final ArrayList<LegalService> services = new ArrayList<>();
 
-    public LegalCase(String description, boolean open, List<Entity> entities, List<Appointment> appointments, List<ClockedTime> clockedTimes) {
-        if(description == null) {
-            throw new IllegalArgumentException("description cannot be null");
+    public LegalCase(Contract contract, String description, boolean open, List<Entity> clients, List<Appointment> appointments) {
+        if (contract == null) {
+            throw new IllegalArgumentException("contract cannot be null");
         }
+        this.contract = contract;
         this.description = description;
         this.open = open;
-        this.entities = new ArrayList<>(entities);
-        this.appointments = new ArrayList<>(appointments);
-        this.clockedTimes = new ArrayList<>(clockedTimes);
-    }
-    public LegalCase(String description, boolean open) {
-        if(description == null) {
-            throw new IllegalArgumentException("description cannot be null");
-        }
-        this.description = description;
-        this.open = open;
-        this.entities = new ArrayList<>();
-        this.appointments = new ArrayList<>();
-        this.clockedTimes = new ArrayList<>();
+        this.clients.addAll(clients);
+        this.appointments.addAll(appointments);
     }
 
-    public LegalCase(String description) {
-        if(description == null) {
-            throw new IllegalArgumentException("description cannot be null");
+    public LegalCase(Contract contract, String description, boolean open) {
+        if (contract == null) {
+            throw new IllegalArgumentException("contract cannot be null");
         }
+        this.contract = contract;
+        this.description = description;
+        this.open = open;
+    }
+
+    public LegalCase(Contract contract, String description) {
+        if (contract == null) {
+            throw new IllegalArgumentException("contract cannot be null");
+        }
+        this.contract = contract;
         this.description = description;
         this.open = true;
-        this.entities = new ArrayList<>();
-        this.appointments = new ArrayList<>();
-        this.clockedTimes = new ArrayList<>();
     }
 
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
+    }
 
     public String getDescription() {
         return description;
@@ -63,20 +73,26 @@ public class LegalCase {
         this.open = open;
     }
 
-    public ArrayList<Entity> getEntities() {
-        return entities;
+    public List<Entity> getClients() {
+        return Collections.unmodifiableList(clients);
     }
 
-    public void addEntity(Entity entity) {
-        this.entities.add(entity);
+    public void addClient(Entity client) {
+        this.clients.add(client);
     }
 
-    public void removeEntity(Entity entity) {
-        this.entities.remove(entity);
+    public void removeClient(Entity client) {
+        this.clients.remove(client);
     }
 
-    public ArrayList<Appointment> getAppointments() {
-        return appointments;
+    public List<Appointment> getAppointments() {
+        return Collections.unmodifiableList(appointments);
+    }
+
+    public List<Appointment> getFutureAppointments() {
+        return this.appointments.stream()
+                .filter(Appointment::inFuture)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public void addAppointment(Appointment appointment) {
@@ -87,15 +103,20 @@ public class LegalCase {
         this.appointments.remove(appointment);
     }
 
-    public ArrayList<ClockedTime> getClockedTimes() {
-        return clockedTimes;
+
+    public List<LegalService> getServices() {
+        return Collections.unmodifiableList(services);
     }
 
-    public void addClockedTime(ClockedTime clockedTime) {
-        this.clockedTimes.add(clockedTimes);
+    public void addService(LegalService service) {
+        this.services.add(service);
     }
 
-    public void removeClockedTime(ClockedTime clockedTime) {
-        this.clockedTimes.remove(clockedTimes);
+    public void removeService(LegalService service) {
+        this.services.remove(service);
+    }
+
+    public BigDecimal totalPrice() {
+        return this.contract.calculateTotalPrice(this);
     }
 }

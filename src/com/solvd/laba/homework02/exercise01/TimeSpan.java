@@ -50,4 +50,18 @@ public class TimeSpan {
     public Duration duration() {
         return Duration.between(this.start, this.end);
     }
+
+    /**
+     * checks if TimeSpan starts after relativeTo parameter
+     */
+    public boolean inFuture(LocalDateTime relativeTo) {
+        return this.start.isAfter(relativeTo);
+    }
+
+    /**
+     * checks if TimeSpan starts after current time
+     */
+    public boolean inFuture() {
+        return inFuture(LocalDateTime.now());
+    }
 }

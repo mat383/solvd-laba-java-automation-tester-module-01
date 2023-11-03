@@ -1,76 +1,88 @@
 package com.solvd.laba.homework02.exercise01;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        Address officeAddress = new Address("Poland", "Warsaw", "00-012",
-                "ul. Nowa", "1a", "12b");
-        Address courtAddress = new Address("Poland", "Warsaw", "00-012",
-                "ul. Nowa", "1a", "12b");
 
 
-        LocalDate caseStart = LocalDate.now().minusDays(12);
-        LocalDate caseEnd   = LocalDate.now().plusDays(12);
+        Entity clientA = new Person("Client", "A");
+        Entity clientB = new Company("Company B");
+        ArrayList<Entity> caseClients = new ArrayList<>();
+        caseClients.add(clientA);
+        caseClients.add(clientB);
 
-	ArrayList<ClockedTime> clockedTimes = new ArrayList<ClockedTime>();
+        Contract caseContract = new ContractPerHour(
+                BigDecimal.valueOf(100),
+                BigDecimal.valueOf(200),
+                BigDecimal.valueOf(200),
+                BigDecimal.valueOf(400));
 
-        LocalDateTime consultationStart = LocalDateTime.of(2023, 10, 11, 11, 0);
-        LocalDateTime consultationEnd = LocalDateTime.of(2023, 10, 11, 12, 0);
-        ClockedTime consultationInOffice = new ClockedTime(consultationStart, consultationEnd,
-                "Initial consultation", false);
-	clockedTimes.add(consultationInOffice);
+        LegalCase caseA = new LegalCase(caseContract, "Case of missing water");
+        caseA.addClient(clientA);
+        caseA.addClient(clientB);
 
-        LocalDateTime courtStart = LocalDateTime.of(2023, 10, 13, 11, 0);
-        LocalDateTime courtEnd   = LocalDateTime.of(2023, 10, 13, 12, 0);
-        ClockedTime courtAppearance = new ClockedTime(courtStart, courtEnd,
-                "Court appearance", false);
-	clockedTimes.add(courtAppearance);
+        TimeSpan consultationTime = new TimeSpan(
+                LocalDateTime.of(2023, 10, 27,
+                        11, 0, 0),
+                LocalDateTime.of(2023, 10, 27,
+                        12, 0, 0));
+        LegalService consultation = new LegalService(LegalService.Type.CONSULTATION,
+                consultationTime);
+        consultation.setComplexity(1.3);
+        caseA.addService(consultation);
 
-	
-        Entity workerA = new Person("Worker", "A");
-        Entity workerB = new Person("Worker", "B");
-        Entity workerC = new Person("Worker", "C");
-        Entity contractorA = new Person("Contractor", "C");
-        contractorA.addContract(
-                new SinglePaymentContract(caseStart, caseEnd,
-                        "Hired PI to investigate r", new BigDecimal("-3.14")));
+        Address courtAddress = new Address("Poland", "Warsaw", "00-123",
+                "Legal Street", "1a", "2b");
+        LocalDateTime courtStart = LocalDateTime.of(2023, 11, 10, 12, 00, 00);
+        LocalDateTime courtEnd = LocalDateTime.of(2023, 11, 10, 15, 00, 00);
+        Appointment courtHearing = new Appointment(Appointment.Type.COURT,
+                courtStart, courtEnd, courtAddress, "First Hearing", caseClients);
+        caseA.addAppointment(courtHearing);
 
-	Entity clientA = new Person("Client", "A");
-	Contract clientContract = new PerHourContract(consultationStart.toLocalDate(),
-	        consultationEnd.toLocalDate(), "Standard rate contract with client",
-		new BigDecimal("100"));
-	clientA.addContract(clientContract);
+        BigDecimal owned = caseA.totalPrice();
+        System.out.println("owned: " + owned.toString());
 
-        ArrayList<Entity> entities = new ArrayList<>();
-        entities.add(new Person("John", "Smith"));
-        entities.add(new Person("Worker", "001"));
-        entities.add(new Person("Worker", "002"));
-        entities.add(new Person("Contractor", "001"));
-        entities.add(new Person("Client", "001"));
-        entities.add(new Person("Client", "002"));
-        entities.add(new Person("Client", "003"));
-        entities.add(new Company("BigCompany001"));
-
-        Appointment ap1 = new Appointment(LocalDateTime.now().plusDays(12),
-                LocalDateTime.now().plusDays(12).plusHours(1), officeAddress,
-                "Legal consultation", entities);
-
-        System.out.println("entities:");
-        for ( Entity e : entities ) {
-            System.out.println("- " + e.getFullName());
+        System.out.println("appointments: ");
+        for (Appointment a : caseA.getFutureAppointments()) {
+            System.out.println(a.getDetails());
         }
-
-	System.out.println("Total cost for client:");
-	BigDecimal totalCosts = new BigDecimal(0);
-	for (Contract c : clientA.getContracts()) {
-	    totalCosts = totalCosts.add(c.calculateOwned(caseStart, caseEnd,
-							 clockedTimes));
-	}
-	System.out.println(totalCosts);
-	
     }
+
+    private Entity generateClient() {
+        final String[] FIRST_NAMES = {
+                "James", " John", " Robert", " Michael", " William",
+                " David", " Richard", " Joseph", " Charles", " Thomas",
+                " Mary", " Patricia", " Jennifer", " Elizabeth", " Linda",
+                " Barbara", " Susan", " Margaret", " Jessica", " Sarah"
+        };
+        final String[] LAST_NAMES = {
+                "Smith", "Johnson", "Williams", "Brown", "Jones",
+                "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
+                "Hernandez", "Lopez", "Gonzales", "Wilson", "Anderson",
+                "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee",
+                "Perez", "Thompson", "White", "Harris", "Sanchez",
+                "Clark", "Ramirez", "Lewis", "Robinson", "Walker",
+                "Young", "Allen", "King", "Wright", "Scott", "Torres",
+                "Nguyen", "Hill", "Flores", "Green", "Adams", "Nelson",
+                "Baker", "Hall"
+        };
+        final String[] COMPANY_NAMES = {
+                "Luminous Dynamics", "Sapphire Industries",
+                "Majestic Innovations", "Spectrum Solutions",
+                "Elevate Enterprises", "Pinnacle Partners",
+                "Vantage Ventures", "Crest Capital",
+                "Horizon Holdings", "Catalyst Corporation"
+        };
+
+        // TODO make it random + randomly generate person or company
+        return new Person(FIRST_NAMES[0], LAST_NAMES[0]);
+    }
+
+    /*private Appointment generateAppointment() {
+        Address courtAddress = new Address("Poland", "Warsaw", "00-123",
+                "Legal Street", "1a", "2b");
+    }*/
 }
