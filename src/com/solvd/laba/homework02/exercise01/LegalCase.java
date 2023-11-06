@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LegalCase {
-    Contract contract;
+    private Contract contract;
     // TODO add case name
-    String description;
-    boolean open;
+    private String description;
+    private boolean open;
 
     /**
      * all entities related to case

@@ -5,10 +5,10 @@ import java.math.RoundingMode;
 import java.time.Duration;
 
 public class ContractPerHour extends Contract {
-    BigDecimal consultationCost;
-    BigDecimal courtHearingCost;
-    BigDecimal researchCost;
-    BigDecimal legalAdviceCost;
+    private BigDecimal consultationCost;
+    private BigDecimal courtHearingCost;
+    private BigDecimal researchCost;
+    private BigDecimal legalAdviceCost;
 
     public ContractPerHour(String description,
                            BigDecimal consultationCost,

@@ -12,28 +12,28 @@ public class LegalService {
         LEGAL_ADVICE
     }
 
-    LegalService.Type type;
-    TimeSpan timeSpan;
+    private LegalService.Type type;
+    private TimeSpan timeSpan;
     /**
      * more precise description of service
      */
-    String description;
+    private String description;
     /**
      * additional information about service
      */
-    String annotation;
+    private String annotation;
     /**
      * how complex service is (could be used as multiplier when pricing).
      * default is 1, lesser the value lesser the complexity
      * should be 0 < complexity < infinity
      */
-    double complexity = 1.;
+    private double complexity = 1.;
     /**
      * how to modify price of service, usage depends on pricing algorithm
      * default is 1, lesser the value lesser the complexity
      * should be 0 < priceModifier < infinity
      */
-    double priceModifier = 1.;
+    private double priceModifier = 1.;
 
     public LegalService(LegalService.Type type, TimeSpan timeSpan,
                         String description, String annotation,
