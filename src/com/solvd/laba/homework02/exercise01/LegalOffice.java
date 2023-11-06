@@ -16,6 +16,7 @@ public class LegalOffice {
     }
 
     public LegalOffice() {
+        this(Collections.emptyList());
     }
 
     public List<LegalCase> getCases() {

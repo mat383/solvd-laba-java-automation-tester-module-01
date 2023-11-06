@@ -11,11 +11,11 @@ public class ContractFlatPrice extends Contract {
     }
 
     public ContractFlatPrice(BigDecimal fee) {
-        this.fee = fee;
+        this("", fee);
     }
 
     public ContractFlatPrice(String fee) {
-        this.fee = new BigDecimal(fee);
+        this("", new BigDecimal(fee));
     }
 
     public BigDecimal getFee() {

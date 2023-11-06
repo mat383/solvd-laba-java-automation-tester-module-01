@@ -13,16 +13,22 @@ public class Appointment extends TimeSpan {
     private Appointment.Type type;
     private Address location;
     private String details;
-    private ArrayList<Entity> participants;
+    private ArrayList<Entity> participants = new ArrayList<>();
 
     public Appointment(Appointment.Type type, LocalDateTime start, LocalDateTime end,
                        Address location, String details, List<Entity> participants) {
+        this(type, start, end, location, details);
+        this.participants.addAll(participants);
+    }
+
+    public Appointment(Appointment.Type type, LocalDateTime start, LocalDateTime end,
+                       Address location, String details) {
         super(start, end);
         this.type = type;
         this.location = location;
         this.details = details;
-        this.participants = new ArrayList<>(participants);
     }
+
 
     @Override
     public String toString() {

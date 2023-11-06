@@ -12,6 +12,9 @@ public class LegalService {
         LEGAL_ADVICE
     }
 
+    static final double STANDARD_COMPLEXITY = 1.;
+    static final double UNMODIFIED_PRICE = 1.;
+
     private LegalService.Type type;
     private TimeSpan timeSpan;
     /**
@@ -27,13 +30,13 @@ public class LegalService {
      * default is 1, lesser the value lesser the complexity
      * should be 0 < complexity < infinity
      */
-    private double complexity = 1.;
+    private double complexity = STANDARD_COMPLEXITY;
     /**
      * how to modify price of service, usage depends on pricing algorithm
      * default is 1, lesser the value lesser the complexity
      * should be 0 < priceModifier < infinity
      */
-    private double priceModifier = 1.;
+    private double priceModifier = UNMODIFIED_PRICE;
 
     public LegalService(LegalService.Type type, TimeSpan timeSpan,
                         String description, String annotation,
@@ -47,8 +50,7 @@ public class LegalService {
     }
 
     public LegalService(LegalService.Type type, TimeSpan timeSpan) {
-        this.type = type;
-        this.timeSpan = timeSpan;
+        this(type, timeSpan, "", "", STANDARD_COMPLEXITY, UNMODIFIED_PRICE);
     }
 
     @Override

@@ -31,21 +31,12 @@ public class LegalCase {
     }
 
     public LegalCase(Contract contract, String description, boolean open) {
-        if (contract == null) {
-            throw new IllegalArgumentException("contract cannot be null");
-        }
-        this.contract = contract;
-        this.description = description;
-        this.open = open;
+        this(contract, description, open,
+                Collections.emptyList(), Collections.emptyList());
     }
 
     public LegalCase(Contract contract, String description) {
-        if (contract == null) {
-            throw new IllegalArgumentException("contract cannot be null");
-        }
-        this.contract = contract;
-        this.description = description;
-        this.open = true;
+        this(contract, description, true);
     }
 
 

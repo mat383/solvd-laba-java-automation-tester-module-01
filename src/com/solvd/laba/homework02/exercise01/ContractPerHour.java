@@ -26,10 +26,9 @@ public class ContractPerHour extends Contract {
                            BigDecimal courtHearingCost,
                            BigDecimal researchCost,
                            BigDecimal legalAdviceCost) {
-        this.consultationCost = consultationCost;
-        this.courtHearingCost = courtHearingCost;
-        this.researchCost = researchCost;
-        this.legalAdviceCost = legalAdviceCost;
+        this("",
+                consultationCost, courtHearingCost,
+                researchCost, legalAdviceCost);
     }
 
     public BigDecimal getConsultationCost() {

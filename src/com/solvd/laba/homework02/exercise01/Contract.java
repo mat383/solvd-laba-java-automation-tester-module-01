@@ -5,13 +5,14 @@ import java.math.BigDecimal;
 
 public abstract class Contract {
 
-    private String description;
+    private String description = "";
 
     public Contract(String description) {
         this.description = description;
     }
 
     public Contract() {
+        this("");
     }
 
     /**
