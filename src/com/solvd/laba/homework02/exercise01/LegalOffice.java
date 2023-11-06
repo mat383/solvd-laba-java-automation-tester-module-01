@@ -25,13 +25,13 @@ public class LegalOffice {
 
     public List<LegalCase> getOpenCases() {
         return this.cases.stream().
-                filter(LegalCase::isOpen)
+                filter(LegalCase::isOpened)
                 .collect(Collectors.toUnmodifiableList());
     }
 
     public List<LegalCase> getClosedCases() {
         return this.cases.stream().
-                filter(legalCase -> !legalCase.isOpen())
+                filter(legalCase -> !legalCase.isOpened())
                 .collect(Collectors.toUnmodifiableList());
     }
 

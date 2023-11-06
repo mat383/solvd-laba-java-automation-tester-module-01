@@ -110,7 +110,7 @@ public class UI {
         System.out.println("Cases:");
         for (LegalCase legalCase : cases) {
             System.out.printf("- (%s) %s\n",
-                    legalCase.isOpen() ? "open" : "closed",
+                    legalCase.isOpened() ? "open" : "closed",
                     legalCase.getDescription());
         }
     }
@@ -121,7 +121,7 @@ public class UI {
         for (LegalCase legalCase : cases) {
             System.out.printf("%02d. (%s) %s\n",
                     index,
-                    legalCase.isOpen() ? "open" : "closed",
+                    legalCase.isOpened() ? "open" : "closed",
                     legalCase.getDescription());
             ++index;
         }

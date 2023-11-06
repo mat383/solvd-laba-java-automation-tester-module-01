@@ -10,7 +10,7 @@ public class LegalCase {
     private Contract contract;
     // TODO add case name
     private String description;
-    private boolean open;
+    private boolean isOpened;
 
     /**
      * all entities related to case
@@ -19,19 +19,19 @@ public class LegalCase {
     private final ArrayList<Appointment> appointments = new ArrayList<>();
     private final ArrayList<LegalService> services = new ArrayList<>();
 
-    public LegalCase(Contract contract, String description, boolean open, List<Entity> clients, List<Appointment> appointments) {
+    public LegalCase(Contract contract, String description, boolean isOpened, List<Entity> clients, List<Appointment> appointments) {
         if (contract == null) {
             throw new IllegalArgumentException("contract cannot be null");
         }
         this.contract = contract;
         this.description = description;
-        this.open = open;
+        this.isOpened = isOpened;
         this.clients.addAll(clients);
         this.appointments.addAll(appointments);
     }
 
-    public LegalCase(Contract contract, String description, boolean open) {
-        this(contract, description, open,
+    public LegalCase(Contract contract, String description, boolean isOpened) {
+        this(contract, description, isOpened,
                 Collections.emptyList(), Collections.emptyList());
     }
 
@@ -56,12 +56,12 @@ public class LegalCase {
         this.description = description;
     }
 
-    public boolean isOpen() {
-        return open;
+    public boolean isOpened() {
+        return isOpened;
     }
 
-    public void setOpen(boolean open) {
-        this.open = open;
+    public void setOpened(boolean opened) {
+        this.isOpened = opened;
     }
 
     public List<Entity> getClients() {
