@@ -12,8 +12,8 @@ public class LegalService {
         LEGAL_ADVICE
     }
 
-    static final double STANDARD_COMPLEXITY = 1.;
-    static final double UNMODIFIED_PRICE = 1.;
+    public static final double STANDARD_COMPLEXITY = 1.;
+    public static final double UNMODIFIED_PRICE = 1.;
 
     private LegalService.Type type;
     private TimeSpan timeSpan;
