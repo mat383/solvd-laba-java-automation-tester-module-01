@@ -3,16 +3,21 @@ package com.solvd.laba.homework02.exercise01;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
         LegalOffice office = new LegalOffice();
 
-        Entity clientA = new Person("Client", "A");
-        Entity clientB = new Company("Company B");
+        Entity clientA = new Person("0123", "Client", "A");
+        Entity clientB = new Person("0124", "Client", "B");
+        Entity clientC = new Company("Company C");
+        Entity clientD = new Company("Company D");
         ArrayList<Entity> caseClients = new ArrayList<>();
         caseClients.add(clientA);
         caseClients.add(clientB);
+        caseClients.add(clientC);
+        caseClients.add(clientD);
 
         Contract caseContract = new ContractPerHour(
                 BigDecimal.valueOf(100),
@@ -24,6 +29,14 @@ public class Main {
         office.addCase(caseA);
         caseA.addClient(clientA);
         caseA.addClient(clientB);
+        caseA.addClient(clientC);
+        caseA.addClient(clientD);
+
+
+        LegalCase caseB = new LegalCase(caseContract, "Case of angry dog");
+        caseB.addClient(clientA);
+        office.addCase(caseB);
+
 
         TimeSpan consultationTime = new TimeSpan(
                 LocalDateTime.of(2023, 10, 27,
@@ -35,6 +48,7 @@ public class Main {
         consultation.setDescription("Initial consultation");
         consultation.setComplexity(1.3);
         caseA.addService(consultation);
+        caseB.addService(consultation);
 
 
         TimeSpan researchATime = new TimeSpan(
@@ -58,8 +72,33 @@ public class Main {
         caseA.addAppointment(courtHearing);
 
 
-        UI officeUI = new UI(office);
+        Appointment caseBAppointmentA = generateAppointment();
+        caseBAppointmentA.addParticipant(clientA);
+        caseB.addAppointment(caseBAppointmentA);
+
+        UI officeUI = new ClientUI(office, clientB);
         officeUI.start();
+
+    }
+
+
+    private static Appointment generateAppointment() {
+        Random random = new Random();
+        int hour = random.nextInt(10, 15);
+        int day = random.nextInt(1, 20);
+        ArrayList<Appointment.Type> appointmentTypes = new ArrayList<>();
+        appointmentTypes.add(Appointment.Type.COURT);
+        appointmentTypes.add(Appointment.Type.CONSULTATION);
+        Appointment.Type type = appointmentTypes.get(random.nextInt(Appointment.Type.values().length));
+
+        LocalDateTime start = LocalDateTime.of(2023, 11, day, hour, 00, 00);
+        LocalDateTime end = LocalDateTime.of(2023, 11, day, hour + 1, 00, 00);
+
+        Address location = new Address("Poland", "Warsaw", "00-123",
+                "Legal Street", "1a", "2b");
+
+
+        return new Appointment(type, start, end, location, "Some random appointment");
 
     }
 }

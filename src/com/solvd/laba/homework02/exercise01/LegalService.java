@@ -30,13 +30,13 @@ public class LegalService {
      * default is 1, lesser the value lesser the complexity
      * should be 0 < complexity < infinity
      */
-    private double complexity = STANDARD_COMPLEXITY;
+    private double complexity;
     /**
      * how to modify price of service, usage depends on pricing algorithm
      * default is 1, lesser the value lesser the complexity
      * should be 0 < priceModifier < infinity
      */
-    private double priceModifier = UNMODIFIED_PRICE;
+    private double priceModifier;
 
     public LegalService(LegalService.Type type, TimeSpan timeSpan,
                         String description, String annotation,

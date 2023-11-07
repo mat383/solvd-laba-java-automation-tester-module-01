@@ -35,6 +35,12 @@ public class LegalOffice {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    public List<LegalCase> getCasesWithClient(Entity client) {
+        return this.cases.stream()
+                .filter(legalCase -> legalCase.haveClient(client))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
     public void addCase(LegalCase legalCase) {
         this.cases.add(legalCase);
     }

@@ -26,7 +26,9 @@ public class LegalCase {
         this.contract = contract;
         this.description = description;
         this.isOpened = isOpened;
-        this.clients.addAll(clients);
+        for (Entity client : clients) {
+            addClient(client);
+        }
         this.appointments.addAll(appointments);
     }
 
@@ -68,8 +70,26 @@ public class LegalCase {
         return Collections.unmodifiableList(clients);
     }
 
-    public void addClient(Entity client) {
+    /**
+     * checks whether client is uniqe to the case and adds it
+     * use in constructor to safely add clients
+     *
+     * @param client
+     */
+    public final void addClient(Entity client) {
+        if (haveClient(client)) {
+            throw new IllegalArgumentException("Case already have client '" + client + "'");
+        }
         this.clients.add(client);
+    }
+
+    public boolean haveClient(Entity client) {
+        for (Entity e : this.clients) {
+            if (e.equals(client)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void removeClient(Entity client) {

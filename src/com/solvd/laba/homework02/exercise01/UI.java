@@ -1,7 +1,9 @@
 package com.solvd.laba.homework02.exercise01;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class UI {
@@ -19,25 +21,31 @@ public class UI {
         casesView();
     }
 
-    private void casesView() {
+    /**
+     * display all cases returned by getCasesForCasesView and allow performing some
+     * operations on them
+     */
+    protected void casesView() {
+        /**
+         * list of all cases that should be shown
+         * needs to be updated after any modification of cases
+         */
+        List<LegalCase> relevantCases = getCasesForCasesView();
         char selection = ' ';
         final char ACTION_QUIT = 'q';
         final char ACTION_DETAILS = 'd';
         final char ACTION_ADD_CASE = 'a';
         final char ACTION_REMOVE_CASE = 'r';
+        final HashMap<Character, String> actions = new HashMap<>();
+        actions.put(ACTION_QUIT, "quit");
+        actions.put(ACTION_DETAILS, "show case details");
+        actions.put(ACTION_ADD_CASE, "add case");
+        actions.put(ACTION_REMOVE_CASE, "remove case");
 
         while (selection != ACTION_QUIT) {
             System.out.println();
-            enumerateCases(office.getCases());
-            System.out.println("Select action:");
-            System.out.printf("- '%c' - quit\n", ACTION_QUIT);
-            System.out.printf("- '%c' - case details\n", ACTION_DETAILS);
-            System.out.printf("- '%c' - add case\n", ACTION_ADD_CASE);
-            System.out.printf("- '%c' - remove case\n", ACTION_REMOVE_CASE);
-            System.out.print("your choice: ");
-            Scanner scanner = new Scanner(System.in);
-            selection = scanner.next().charAt(0);
-            System.out.println();
+            enumerateCases(relevantCases);
+            selection = selectCharOptionWithDescription(actions);
 
             switch (selection) {
                 case ACTION_QUIT:
@@ -45,36 +53,49 @@ public class UI {
                     break;
 
                 case ACTION_DETAILS:
-                    if (office.getCases().isEmpty()) {
+                    if (relevantCases.isEmpty()) {
                         System.out.println("No cases");
                         break;
                     }
                     System.out.println("Showing case details");
-                    int caseNumber = promptSelectNumericOption(
-                            "Case number: ", 1, office.getCases().size());
-                    caseDetailsView(office.getCases().get(caseNumber - 1));
+                    int caseNumber = selectNumericOption(
+                            "Case number: ", 1, relevantCases.size());
+                    caseDetailsView(relevantCases.get(caseNumber - 1));
+                    relevantCases = getCasesForCasesView();
                     break;
 
                 case ACTION_ADD_CASE:
                     System.out.println("Adding case");
                     this.office.addCase(createCase());
+                    relevantCases = getCasesForCasesView();
                     break;
 
                 case ACTION_REMOVE_CASE:
-                    if (office.getCases().isEmpty()) {
+                    if (relevantCases.isEmpty()) {
                         System.out.println("No cases");
                         break;
                     }
                     System.out.println("Removing case");
-                    int caseToDeleteNumber = promptSelectNumericOption(
-                            "Case number: ", 1, office.getCases().size());
-                    office.removeCase(office.getCases().get(caseToDeleteNumber - 1));
+                    // TODO add method to select element from list
+                    int caseToDeleteNumber = selectNumericOption(
+                            "Case number: ", 1, relevantCases.size());
+                    office.removeCase(relevantCases.get(caseToDeleteNumber - 1));
+                    relevantCases = getCasesForCasesView();
                     break;
 
                 default:
                     System.out.printf("Choice doesn't match any action: '%c'\n", selection);
             }
         }
+    }
+
+    /**
+     * used in casesView to update list of relevant cases after adding or removing cases
+     *
+     * @return list of cases to be displayed in casesView
+     */
+    protected List<LegalCase> getCasesForCasesView() {
+        return office.getCases();
     }
 
     public void caseDetailsView(LegalCase legalCase) {
@@ -147,9 +168,10 @@ public class UI {
 
     protected Entity createClient() {
         // TODO add option to create Person or Company
+        String id = promptForString("Id: ");
         String firstName = promptForString("First name: ");
         String lastName = promptForString("Last name: ");
-        return new Person(firstName, lastName);
+        return new Person(id, firstName, lastName);
     }
 
     protected Contract createContract() {
@@ -164,13 +186,19 @@ public class UI {
         return scanner.nextLine();
     }
 
+    protected char promptForChar(String prompt) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print(prompt);
+        return scanner.next().charAt(0);
+    }
+
     protected BigDecimal promptForBigDecimal(String prompt) {
         Scanner scanner = new Scanner(System.in);
         System.out.print(prompt);
         return new BigDecimal(scanner.next());
     }
 
-    protected int promptSelectNumericOption(String prompt, int minOption, int maxOption) {
+    protected int selectNumericOption(String prompt, int minOption, int maxOption) {
         if (minOption > maxOption) {
             throw new IllegalArgumentException("minOption cannot be greater than maxOption");
         }
@@ -185,5 +213,30 @@ public class UI {
             }
         }
         return selection;
+    }
+
+    /**
+     * returns selected option as char
+     *
+     * @param options map of options (Character) with descriptions (String)
+     * @return Character corresponding to selected options
+     */
+    protected char selectCharOptionWithDescription(Map<Character, String> options) {
+        if (options.isEmpty()) {
+            throw new IllegalArgumentException("options Map cannot be empty");
+        }
+        Character selectedOption = null;
+        while (selectedOption == null || !options.containsKey(selectedOption)) {
+            if (selectedOption != null && !options.containsKey(selectedOption)) {
+                System.out.println("Selected invalid option '" + selectedOption + "'");
+            }
+            System.out.println("Select option:");
+            for (Map.Entry<Character, String> entry : options.entrySet()) {
+                System.out.printf("- '%c' - %s\n", entry.getKey(), entry.getValue());
+            }
+            selectedOption = promptForChar("Choice: ");
+        }
+
+        return selectedOption;
     }
 }

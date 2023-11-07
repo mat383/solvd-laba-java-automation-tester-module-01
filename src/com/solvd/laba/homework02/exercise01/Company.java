@@ -3,20 +3,22 @@ package com.solvd.laba.homework02.exercise01;
 import java.util.Objects;
 
 public class Company extends Entity {
-    private String companyName;
+    private final String name;
 
-    // TODO add other constructors
-    public Company(String companyName) {
-        super();
-        if (companyName == null) {
-            throw new IllegalArgumentException("companyName cannot be null");
+    public Company(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("name cannot be null");
         }
-        this.companyName = companyName;
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("name cannot be empty");
+        }
+
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return this.companyName;
+        return this.name;
     }
 
     @Override
@@ -30,8 +32,9 @@ public class Company extends Entity {
         if (!(obj instanceof Company)) {
             return false;
         }
+
         Company other = (Company) obj;
-        if (this.companyName.equals(other.getCompanyName())) {
+        if (this.name.equals(other.getName())) {
             return true;
         }
 
@@ -40,22 +43,15 @@ public class Company extends Entity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.companyName);
+        return Objects.hash(this.name);
     }
 
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        if (companyName == null) {
-            throw new IllegalArgumentException("companyName cannot be null");
-        }
-        this.companyName = companyName;
+    public String getName() {
+        return name;
     }
 
     @Override
     public String getFullName() {
-        return this.companyName;
+        return this.name;
     }
 }
