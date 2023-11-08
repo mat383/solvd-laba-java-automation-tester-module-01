@@ -1,10 +1,7 @@
 package com.solvd.laba.homework02.exercise01;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class UI {
     private final LegalOffice office;
@@ -26,7 +23,7 @@ public class UI {
      * operations on them
      */
     protected void casesView() {
-        /**
+        /*
          * list of all cases that should be shown
          * needs to be updated after any modification of cases
          */
@@ -110,9 +107,7 @@ public class UI {
         System.out.println();
 
         System.out.println("** Appointments");
-        for (Appointment appointment : legalCase.getAppointments()) {
-            System.out.println("- " + appointment);
-        }
+        listAppointments(legalCase.getAppointments());
         System.out.println();
 
         System.out.println("** Services provided");
@@ -148,22 +143,96 @@ public class UI {
         }
     }
 
+    protected void listAppointments(List<Appointment> appointments) {
+        for (Appointment appointment : appointments) {
+            System.out.printf("- %s\n", appointment);
+        }
+    }
+
     protected LegalCase createCase() {
         System.out.println("\n* Creating case");
 
         System.out.println("** Creating description");
         String description = promptForString("description: ");
 
-        System.out.println("** Creating clients");
-        Entity client = createClient();
-
         System.out.println("** Creating contract");
         Contract contract = createContract();
 
         LegalCase newCase = new LegalCase(contract, description);
-        newCase.addClient(client);
+
+        System.out.println("** Creating clients");
+        addClientsToCase(newCase);
 
         return newCase;
+    }
+
+    /**
+     * prompts for and adds clients to case, used by createCase
+     *
+     * @param legalCase case to create and add clients for
+     */
+    protected void addClientsToCase(LegalCase legalCase) {
+        Map<Character, String> createClientsOptions = new HashMap<>();
+        final char ACTION_ADD = 'a';
+        createClientsOptions.put(ACTION_ADD, "Add another client");
+        final char ACTION_ADD_EXISTING = 'e';
+        createClientsOptions.put(ACTION_ADD_EXISTING, "Add existing client");
+        final char ACTION_LIST = 'l';
+        createClientsOptions.put(ACTION_LIST, "List added clients");
+        final char ACTION_QUIT = 'q';
+        createClientsOptions.put(ACTION_QUIT, "Finish adding clients");
+
+        // separate each action with empty line
+        System.out.println();
+        char option = selectCharOptionWithDescription(createClientsOptions);
+
+        // quit adding when user chooses to AND there is at least one client added
+        while (option != ACTION_QUIT
+                || legalCase.getClients().isEmpty()) {
+            switch (option) {
+                case ACTION_ADD:
+                    try {
+                        legalCase.addClient(createClient());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("This case already have this client");
+                    }
+                    break;
+                case ACTION_ADD_EXISTING:
+                    List<Entity> existingClients = new ArrayList<>(this.office.getClients());
+                    for (int i = 0; i < existingClients.size(); ++i) {
+                        System.out.printf("%02d. %s\n", i + 1, existingClients.get(i));
+                    }
+                    // displayed numbers start at 1, so index = selectedNumber - 1
+                    int selectedClientNumber = selectNumericOption("Select client to add: ", 1, existingClients.size());
+                    Entity selectedClient = existingClients.get(selectedClientNumber - 1);
+
+                    try {
+                        legalCase.addClient(selectedClient);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("This case already have this client");
+                    }
+                    break;
+                case ACTION_LIST:
+                    if (legalCase.getClients().isEmpty()) {
+                        System.out.println("No clients added yet");
+                    } else {
+                        System.out.println("Clients:");
+                    }
+                    for (Entity client : legalCase.getClients()) {
+                        System.out.printf("- %s\n", client);
+                    }
+                    break;
+                case ACTION_QUIT:
+                    if (legalCase.getClients().isEmpty()) {
+                        System.out.println("Cannot quit because no client was added");
+                    }
+                    break;
+            }
+
+            // separate each action with empty line
+            System.out.println();
+            option = selectCharOptionWithDescription(createClientsOptions);
+        }
     }
 
     protected Entity createClient() {

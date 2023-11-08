@@ -76,8 +76,10 @@ public class Main {
         caseBAppointmentA.addParticipant(clientA);
         caseB.addAppointment(caseBAppointmentA);
 
-        UI officeUI = new ClientUI(office, clientB);
-        officeUI.start();
+
+        UI ui = new ClientUI(office, clientB);
+        //UI ui = new UI(office);
+        ui.start();
 
     }
 

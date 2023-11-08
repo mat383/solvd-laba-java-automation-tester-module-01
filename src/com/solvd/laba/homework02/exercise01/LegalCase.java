@@ -106,6 +106,12 @@ public class LegalCase {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    public List<Appointment> getClientAppointments(Entity client) {
+        return this.appointments.stream()
+                .filter(appointment -> appointment.getParticipants().contains(client))
+                .collect(Collectors.toUnmodifiableList());
+    }
+
     public void addAppointment(Appointment appointment) {
         this.appointments.add(appointment);
     }

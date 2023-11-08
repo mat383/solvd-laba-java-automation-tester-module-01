@@ -1,9 +1,6 @@
 package com.solvd.laba.homework02.exercise01;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class LegalOffice {
@@ -35,7 +32,7 @@ public class LegalOffice {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public List<LegalCase> getCasesWithClient(Entity client) {
+    public List<LegalCase> getClientCases(Entity client) {
         return this.cases.stream()
                 .filter(legalCase -> legalCase.haveClient(client))
                 .collect(Collectors.toUnmodifiableList());
@@ -47,5 +44,23 @@ public class LegalOffice {
 
     public void removeCase(LegalCase legalCase) {
         this.cases.remove(legalCase);
+    }
+
+    public Set<Entity> getClients() {
+        HashSet<Entity> clients = new HashSet<>();
+        for (LegalCase legalCase : this.cases) {
+            clients.addAll(cases.getFirst().getClients());
+        }
+
+        return Collections.unmodifiableSet(clients);
+    }
+
+    public List<Appointment> getClientAppointments(Entity client) {
+        List<Appointment> appointments = new ArrayList<>();
+        for (LegalCase legalCase : this.cases) {
+            appointments.addAll(legalCase.getClientAppointments(client));
+        }
+
+        return Collections.unmodifiableList(appointments);
     }
 }
