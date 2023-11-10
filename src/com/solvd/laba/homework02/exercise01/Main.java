@@ -19,21 +19,25 @@ public class Main {
         LOGGER.info("Main started");
         LegalOffice office = new LegalOffice();
 
-        Entity clientA = new Person("0123", "Client", "A");
-        Entity clientB = new Person("0124", "Client", "B");
-        Entity clientC = new Company("Company C");
-        Entity clientD = new Company("Company D");
+        Entity clientA = LegalOfficeGenerator.generatePerson();
+        Entity clientB = LegalOfficeGenerator.generatePerson();
+        Entity clientC = LegalOfficeGenerator.generateCompany();
+        Entity clientD = new Company("Some New Company");
         ArrayList<Entity> caseClients = new ArrayList<>();
         caseClients.add(clientA);
         caseClients.add(clientB);
         caseClients.add(clientC);
         caseClients.add(clientD);
 
-        Contract caseContract = new ContractPerHour(
+        IContract caseContract = new ContractPerHour(
                 BigDecimal.valueOf(100),
                 BigDecimal.valueOf(200),
                 BigDecimal.valueOf(200),
                 BigDecimal.valueOf(400));
+        // add discount
+
+        BigDecimal discount = new BigDecimal("0.20");
+        caseContract = new ContractDiscountDecorator(caseContract, discount);
 
         LegalCase caseA = new LegalCase(caseContract, "Case of missing water");
         office.addCase(caseA);
@@ -91,10 +95,12 @@ public class Main {
         office.addCase(LegalOfficeGenerator.generateCase());
         office.addCase(LegalOfficeGenerator.generateCase());
         office.addCase(LegalOfficeGenerator.generateCase());
+        office.addCase(LegalOfficeGenerator.generateCase());
 
+        // TODO add UI for selecting UI type / use args
         //UI ui = new ClientUI(office, clientB);
-        //UI ui = new UI(office);
-        UI ui = new UI(LegalOfficeGenerator.generateLegalOffice());
+        UI ui = new UI(office);
+        //UI ui = new UI(LegalOfficeGenerator.generateLegalOffice());
         ui.start();
 
     }

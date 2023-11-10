@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LegalCase {
-    private Contract contract;
+    private IContract contract;
     // TODO add case name
     private String description;
     private boolean isOpened;
@@ -19,7 +19,7 @@ public class LegalCase {
     private final ArrayList<Appointment> appointments = new ArrayList<>();
     private final ArrayList<LegalService> services = new ArrayList<>();
 
-    public LegalCase(Contract contract, String description, boolean isOpened, List<Entity> clients, List<Appointment> appointments) {
+    public LegalCase(IContract contract, String description, boolean isOpened, List<Entity> clients, List<Appointment> appointments) {
         if (contract == null) {
             throw new IllegalArgumentException("contract cannot be null");
         }
@@ -32,21 +32,21 @@ public class LegalCase {
         this.appointments.addAll(appointments);
     }
 
-    public LegalCase(Contract contract, String description, boolean isOpened) {
+    public LegalCase(IContract contract, String description, boolean isOpened) {
         this(contract, description, isOpened,
                 Collections.emptyList(), Collections.emptyList());
     }
 
-    public LegalCase(Contract contract, String description) {
+    public LegalCase(IContract contract, String description) {
         this(contract, description, true);
     }
 
 
-    public Contract getContract() {
+    public IContract getContract() {
         return contract;
     }
 
-    public void setContract(Contract contract) {
+    public void setContract(IContract contract) {
         this.contract = contract;
     }
 

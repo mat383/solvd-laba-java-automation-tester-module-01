@@ -2,7 +2,7 @@ package com.solvd.laba.homework02.exercise01;
 
 import java.math.BigDecimal;
 
-public class ContractFlatPrice extends Contract {
+public class ContractFlatPrice extends ContractWithDescription {
     private BigDecimal fee;
 
     public ContractFlatPrice(String description, BigDecimal fee) {

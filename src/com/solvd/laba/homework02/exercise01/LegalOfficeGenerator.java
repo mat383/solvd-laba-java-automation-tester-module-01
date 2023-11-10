@@ -61,7 +61,7 @@ public class LegalOfficeGenerator {
     }
 
     public static LegalCase generateCase() {
-        Contract contract = generateContact();
+        IContract contract = generateContact();
         String description = generateLegalCaseDescription();
         boolean isOpened = RANDOM_GENERATOR.nextBoolean();
 
@@ -111,7 +111,7 @@ public class LegalOfficeGenerator {
         return randomElement(PREFIXES) + " " + randomElement(FIRST_PART) + " " + randomElement(LAST_PART);
     }
 
-    public static Contract generateContact() {
+    public static IContract generateContact() {
         boolean flatPrice = RANDOM_GENERATOR.nextBoolean();
 
         if (flatPrice) {

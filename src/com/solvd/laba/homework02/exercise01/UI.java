@@ -164,7 +164,7 @@ public class UI {
         String description = promptForString("description: ");
 
         System.out.println("** Creating contract");
-        Contract contract = createContract();
+        ContractWithDescription contract = createContract();
 
         LegalCase newCase = new LegalCase(contract, description);
 
@@ -253,7 +253,7 @@ public class UI {
         return new Person(id, firstName, lastName);
     }
 
-    protected Contract createContract() {
+    protected ContractWithDescription createContract() {
         // TODO add more contract options
         BigDecimal flatPrice = promptForBigDecimal("Contract flat price: ");
         return new ContractFlatPrice(flatPrice);
