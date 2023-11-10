@@ -76,8 +76,14 @@ public class Main {
         caseB.addAppointment(caseBAppointmentA);
 
 
+        office.addCase(LegalOfficeGenerator.generateCase());
+        office.addCase(LegalOfficeGenerator.generateCase());
+        office.addCase(LegalOfficeGenerator.generateCase());
+        office.addCase(LegalOfficeGenerator.generateCase());
+
         //UI ui = new ClientUI(office, clientB);
-        UI ui = new UI(office);
+        //UI ui = new UI(office);
+        UI ui = new UI(LegalOfficeGenerator.generateLegalOffice());
         ui.start();
 
     }
