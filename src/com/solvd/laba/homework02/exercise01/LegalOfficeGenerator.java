@@ -79,10 +79,15 @@ public class LegalOfficeGenerator {
         boolean isOpened = RANDOM_GENERATOR.nextBoolean();
 
         // generate clients
+        // it might add less than clientsNumber if duplicates are generated
         int clientsNumber = RANDOM_GENERATOR.nextInt(1, 4);
-        List<Entity> clients = generateMany(
-                clientsNumber,
-                LegalOfficeGenerator::generateEntity);
+        List<Entity> clients = new ArrayList<>(clientsNumber);
+        for (int i = 0; i < clientsNumber; ++i) {
+            Entity generatedClient = generateEntity();
+            if (!clients.contains(generatedClient)) {
+                clients.add(generatedClient);
+            }
+        }
 
         // generate appointments (only if case is opened)
         int appointmentsNumber = isOpened
