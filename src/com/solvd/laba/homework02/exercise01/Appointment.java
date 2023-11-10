@@ -89,10 +89,17 @@ public class Appointment extends TimeSpan {
     }
 
     public void addParticipant(Entity participant) {
+        if (haveParticipant(participant)) {
+            throw new IllegalArgumentException("Appointments already have participant '" + participant + "'");
+        }
         this.participants.add(participant);
     }
 
     public void removeParticipant(Entity participant) {
         this.participants.remove(participant);
+    }
+
+    public boolean haveParticipant(Entity participant) {
+        return this.participants.contains(participant);
     }
 }

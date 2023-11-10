@@ -3,7 +3,6 @@ package com.solvd.laba.homework02.exercise01;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
@@ -72,35 +71,16 @@ public class Main {
         caseA.addAppointment(courtHearing);
 
 
-        Appointment caseBAppointmentA = generateAppointment();
+        Appointment caseBAppointmentA = LegalOfficeGenerator.generateAppointment();
         caseBAppointmentA.addParticipant(clientA);
         caseB.addAppointment(caseBAppointmentA);
 
 
-        UI ui = new ClientUI(office, clientB);
-        //UI ui = new UI(office);
+        //UI ui = new ClientUI(office, clientB);
+        UI ui = new UI(office);
         ui.start();
 
     }
 
 
-    private static Appointment generateAppointment() {
-        Random random = new Random();
-        int hour = random.nextInt(10, 15);
-        int day = random.nextInt(1, 20);
-        ArrayList<Appointment.Type> appointmentTypes = new ArrayList<>();
-        appointmentTypes.add(Appointment.Type.COURT);
-        appointmentTypes.add(Appointment.Type.CONSULTATION);
-        Appointment.Type type = appointmentTypes.get(random.nextInt(Appointment.Type.values().length));
-
-        LocalDateTime start = LocalDateTime.of(2023, 11, day, hour, 00, 00);
-        LocalDateTime end = LocalDateTime.of(2023, 11, day, hour + 1, 00, 00);
-
-        Address location = new Address("Poland", "Warsaw", "00-123",
-                "Legal Street", "1a", "2b");
-
-
-        return new Appointment(type, start, end, location, "Some random appointment");
-
-    }
 }
