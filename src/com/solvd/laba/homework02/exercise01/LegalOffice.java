@@ -1,14 +1,20 @@
 package com.solvd.laba.homework02.exercise01;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class LegalOffice {
+
+    private static final Logger LOGGER = LogManager.getLogger(LegalOffice.class.getName());
     private final ArrayList<LegalCase> cases = new ArrayList<>();
     // TODO add address book
 
 
     public LegalOffice(Collection<LegalCase> cases) {
+        LOGGER.info("LegalOffice created");
         this.cases.addAll(cases);
     }
 
@@ -39,10 +45,12 @@ public class LegalOffice {
     }
 
     public void addCase(LegalCase legalCase) {
+        LOGGER.info("Legal case with hash " + legalCase.hashCode() + "added to legalOffice");
         this.cases.add(legalCase);
     }
 
     public void removeCase(LegalCase legalCase) {
+        LOGGER.info("Legal case with hash " + legalCase.hashCode() + "removed from legalOffice");
         this.cases.remove(legalCase);
     }
 

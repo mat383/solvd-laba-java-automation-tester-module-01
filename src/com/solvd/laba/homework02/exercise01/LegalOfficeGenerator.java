@@ -1,5 +1,8 @@
 package com.solvd.laba.homework02.exercise01;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,24 +12,8 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 
-/* legal office structure:
-- legalOffice
-  - legalCases
-    - contract
-    - description
-    - isOpened
-    - clients
-    - Appointments
-      - timespan
-      - address
-      - participants
-    - services
-      - type
-      - timespan
-      - description
- */
-
 public class LegalOfficeGenerator {
+    private static final Logger LOGGER = LogManager.getLogger(LegalOffice.class.getName());
     // minimum and maximum duration (in hours) values for generating random timespan
     // used for appointments and services
     private static final int MIN_TIMESPAN_DURATION_HOURS = 1;
@@ -86,6 +73,8 @@ public class LegalOfficeGenerator {
             Entity generatedClient = generateEntity();
             if (!clients.contains(generatedClient)) {
                 clients.add(generatedClient);
+            } else {
+                LOGGER.info("generateEntity generated duplicate of already generated client");
             }
         }
 

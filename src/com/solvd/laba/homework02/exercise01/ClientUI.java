@@ -1,10 +1,14 @@
 package com.solvd.laba.homework02.exercise01;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class ClientUI extends UI {
+    private static final Logger LOGGER = LogManager.getLogger(LegalOffice.class.getName());
     private final Entity client;
 
     public ClientUI(LegalOffice office, Entity client) {
@@ -83,6 +87,7 @@ public final class ClientUI extends UI {
         try {
             legalCase.addClient(this.client);
         } catch (IllegalArgumentException e) {
+            LOGGER.info("Trying to add already added client to case");
             // do nothing, client already added
         }
         System.out.println("Adding client " + this.client + " to case");
@@ -99,6 +104,7 @@ public final class ClientUI extends UI {
                     try {
                         legalCase.addClient(createClient());
                     } catch (IllegalArgumentException e) {
+                        LOGGER.warn("Trying to add already added client to case");
                         System.out.println("This case already have this client");
                     }
                     break;

@@ -1,9 +1,14 @@
 package com.solvd.laba.homework02.exercise01;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.math.BigDecimal;
 import java.util.*;
 
 public class UI {
+
+    private static final Logger LOGGER = LogManager.getLogger(LegalOffice.class.getName());
     private final LegalOffice office;
 
     public UI(LegalOffice office) {
@@ -15,6 +20,7 @@ public class UI {
     }
 
     public void start() {
+        LOGGER.info("UI Started");
         casesView();
     }
 
@@ -23,6 +29,7 @@ public class UI {
      * operations on them
      */
     protected void casesView() {
+        LOGGER.debug("Entering casesView");
         /*
          * list of all cases that should be shown
          * needs to be updated after any modification of cases
@@ -43,6 +50,7 @@ public class UI {
             System.out.println();
             enumerateCases(relevantCases);
             selection = selectCharOptionWithDescription(actions);
+            LOGGER.debug("Selected option " + selection + " in cases view");
 
             switch (selection) {
                 case ACTION_QUIT:
@@ -194,6 +202,7 @@ public class UI {
                     try {
                         legalCase.addClient(createClient());
                     } catch (IllegalArgumentException e) {
+                        LOGGER.warn("Trying to add already added client to case");
                         System.out.println("This case already have this client");
                     }
                     break;
@@ -209,6 +218,7 @@ public class UI {
                     try {
                         legalCase.addClient(selectedClient);
                     } catch (IllegalArgumentException e) {
+                        LOGGER.warn("Trying to add already added client to case");
                         System.out.println("This case already have this client");
                     }
                     break;
