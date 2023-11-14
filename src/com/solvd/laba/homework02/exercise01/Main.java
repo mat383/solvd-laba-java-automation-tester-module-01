@@ -102,6 +102,7 @@ public class Main {
         //UI ui = new ClientUI(office, clientB);
         UI ui = new UI(office);
         //UI ui = new UI(LegalOfficeGenerator.generateLegalOffice());
+        //UI ui = new FilteredUI(office, new LegalCasesClientFilter(clientA));
         ui.show();
 
     }

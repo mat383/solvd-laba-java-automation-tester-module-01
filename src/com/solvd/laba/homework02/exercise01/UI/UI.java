@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class UI implements Showable {
+public class UI {
 
     private static final Logger LOGGER = LogManager.getLogger(LegalOffice.class.getName());
     private final LegalOffice office;
@@ -65,7 +65,7 @@ public class UI implements Showable {
                     }
                     System.out.println("Showing case details");
                     int caseNumber = selectNumericOption(
-                            "Case number: ", 1, relevantCases.size());
+                            "Case number: ", new IntegerInRangeValidator(1, relevantCases.size()));
                     caseDetailsView(relevantCases.get(caseNumber - 1));
                     relevantCases = getCasesForCasesView();
                     break;
@@ -84,7 +84,7 @@ public class UI implements Showable {
                     System.out.println("Removing case");
                     // TODO add method to select element from list
                     int caseToDeleteNumber = selectNumericOption(
-                            "Case number: ", 1, relevantCases.size());
+                            "Case number: ", new IntegerInRangeValidator(1, relevantCases.size()));
                     office.removeCase(relevantCases.get(caseToDeleteNumber - 1));
                     relevantCases = getCasesForCasesView();
                     break;
@@ -213,7 +213,7 @@ public class UI implements Showable {
                         System.out.printf("%02d. %s\n", i + 1, existingClients.get(i));
                     }
                     // displayed numbers start at 1, so index = selectedNumber - 1
-                    int selectedClientNumber = selectNumericOption("Select client to add: ", 1, existingClients.size());
+                    int selectedClientNumber = selectNumericOption("Select client to add: ", new IntegerInRangeValidator(1, existingClients.size()));
                     IEntity selectedClient = existingClients.get(selectedClientNumber - 1);
 
                     try {
@@ -278,18 +278,15 @@ public class UI implements Showable {
         return new BigDecimal(scanner.next());
     }
 
-    protected int selectNumericOption(String prompt, int minOption, int maxOption) {
-        if (minOption > maxOption) {
-            throw new IllegalArgumentException("minOption cannot be greater than maxOption");
-        }
-        int selection = minOption - 1;
-        while (selection < minOption || maxOption < selection) {
+    protected int selectNumericOption(String prompt, IValidator<Integer> validator) {
+        Integer selection = null;
+        while (selection == null || !validator.isValid(selection)) {
             Scanner scanner = new Scanner(System.in);
             System.out.print(prompt);
             selection = scanner.nextInt();
 
-            if (selection < minOption || maxOption < selection) {
-                System.out.printf("Option out of bonds (%d-%d)\n", minOption, maxOption);
+            if (!validator.isValid(selection)) {
+                System.out.printf("Option out of bonds \n");
             }
         }
         return selection;
