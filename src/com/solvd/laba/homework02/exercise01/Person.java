@@ -2,7 +2,7 @@ package com.solvd.laba.homework02.exercise01;
 
 import java.util.Objects;
 
-public class Person extends Entity {
+public class Person implements IEntity {
 
     private final String id;
     private String firstName;

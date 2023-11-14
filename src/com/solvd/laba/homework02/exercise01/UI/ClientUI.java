@@ -1,5 +1,8 @@
-package com.solvd.laba.homework02.exercise01;
+package com.solvd.laba.homework02.exercise01.UI;
 
+import com.solvd.laba.homework02.exercise01.IEntity;
+import com.solvd.laba.homework02.exercise01.LegalCase;
+import com.solvd.laba.homework02.exercise01.LegalOffice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,9 +12,9 @@ import java.util.Map;
 
 public final class ClientUI extends UI {
     private static final Logger LOGGER = LogManager.getLogger(LegalOffice.class.getName());
-    private final Entity client;
+    private final IEntity client;
 
-    public ClientUI(LegalOffice office, Entity client) {
+    public ClientUI(LegalOffice office, IEntity client) {
         super(office);
         if (client == null) {
             throw new IllegalArgumentException("client have to be reference to valid object, cannot be null");
@@ -19,13 +22,13 @@ public final class ClientUI extends UI {
         this.client = client;
     }
 
-    public Entity getClient() {
+    public IEntity getClient() {
         return client;
     }
 
 
     @Override
-    public void start() {
+    public void show() {
         clientDashboardView();
     }
 
@@ -114,7 +117,7 @@ public final class ClientUI extends UI {
                     } else {
                         System.out.println("Clients:");
                     }
-                    for (Entity client : legalCase.getClients()) {
+                    for (IEntity client : legalCase.getClients()) {
                         System.out.printf("- %s\n", client);
                     }
                     break;

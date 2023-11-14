@@ -68,9 +68,9 @@ public class LegalOfficeGenerator {
         // generate clients
         // it might add less than clientsNumber if duplicates are generated
         int clientsNumber = RANDOM_GENERATOR.nextInt(1, 4);
-        List<Entity> clients = new ArrayList<>(clientsNumber);
+        List<IEntity> clients = new ArrayList<>(clientsNumber);
         for (int i = 0; i < clientsNumber; ++i) {
-            Entity generatedClient = generateEntity();
+            IEntity generatedClient = generateEntity();
             if (!clients.contains(generatedClient)) {
                 clients.add(generatedClient);
             } else {
@@ -128,7 +128,7 @@ public class LegalOfficeGenerator {
         }
     }
 
-    public static Entity generateEntity() {
+    public static IEntity generateEntity() {
         boolean isCompany = RANDOM_GENERATOR.nextBoolean();
 
         if (isCompany) {
@@ -181,10 +181,10 @@ public class LegalOfficeGenerator {
 
 
     public static Appointment generateAppointment() {
-        return generateAppointment(Collections.<Entity>emptyList());
+        return generateAppointment(Collections.<IEntity>emptyList());
     }
 
-    public static Appointment generateAppointment(List<Entity> possibleParticipants) {
+    public static Appointment generateAppointment(List<IEntity> possibleParticipants) {
         // TODO randomly generate description
         Appointment.Type type = randomElement(Appointment.Type.values());
         TimeSpan timeSpan = generateTimeSpan(true);
@@ -195,11 +195,11 @@ public class LegalOfficeGenerator {
                 location, "Some random appointment");
 
         // add random participants from possible participants
-        List<Entity> shuffledPossibleParticipants = new ArrayList<>(possibleParticipants);
+        List<IEntity> shuffledPossibleParticipants = new ArrayList<>(possibleParticipants);
         Collections.shuffle(shuffledPossibleParticipants);
         // set initially to true to add at least one participant (if exists)
         boolean addParticipant = true;
-        for (Entity participant : shuffledPossibleParticipants) {
+        for (IEntity participant : shuffledPossibleParticipants) {
             if (addParticipant && !generatedAppointment.haveParticipant(participant)) {
                 generatedAppointment.addParticipant(participant);
             }
@@ -265,7 +265,7 @@ public class LegalOfficeGenerator {
         return RANDOM_GENERATOR.nextDouble(0, 1) < truthChance;
     }
 
-    private static <T> List<T> generateMany(int number, Supplier<T> generator) {
+    public static <T> List<T> generateMany(int number, Supplier<T> generator) {
         List<T> generatedList = new ArrayList<>(number);
         for (int i = 0; i < number; i++) {
             generatedList.add(generator.get());

@@ -15,18 +15,18 @@ public class LegalCase {
     /**
      * all entities related to case
      */
-    private final ArrayList<Entity> clients = new ArrayList<>();
+    private final ArrayList<IEntity> clients = new ArrayList<>();
     private final ArrayList<Appointment> appointments = new ArrayList<>();
     private final ArrayList<LegalService> services = new ArrayList<>();
 
-    public LegalCase(IContract contract, String description, boolean isOpened, List<Entity> clients, List<Appointment> appointments) {
+    public LegalCase(IContract contract, String description, boolean isOpened, List<IEntity> clients, List<Appointment> appointments) {
         if (contract == null) {
             throw new IllegalArgumentException("contract cannot be null");
         }
         this.contract = contract;
         this.description = description;
         this.isOpened = isOpened;
-        for (Entity client : clients) {
+        for (IEntity client : clients) {
             addClient(client);
         }
         this.appointments.addAll(appointments);
@@ -66,7 +66,7 @@ public class LegalCase {
         this.isOpened = opened;
     }
 
-    public List<Entity> getClients() {
+    public List<IEntity> getClients() {
         return Collections.unmodifiableList(clients);
     }
 
@@ -76,15 +76,15 @@ public class LegalCase {
      *
      * @param client
      */
-    public final void addClient(Entity client) {
+    public final void addClient(IEntity client) {
         if (haveClient(client)) {
             throw new IllegalArgumentException("Case already have client '" + client + "'");
         }
         this.clients.add(client);
     }
 
-    public boolean haveClient(Entity client) {
-        for (Entity e : this.clients) {
+    public boolean haveClient(IEntity client) {
+        for (IEntity e : this.clients) {
             if (e.equals(client)) {
                 return true;
             }
@@ -92,7 +92,7 @@ public class LegalCase {
         return false;
     }
 
-    public void removeClient(Entity client) {
+    public void removeClient(IEntity client) {
         this.clients.remove(client);
     }
 
@@ -106,7 +106,7 @@ public class LegalCase {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public List<Appointment> getClientAppointments(Entity client) {
+    public List<Appointment> getClientAppointments(IEntity client) {
         return this.appointments.stream()
                 .filter(appointment -> appointment.getParticipants().contains(client))
                 .collect(Collectors.toUnmodifiableList());

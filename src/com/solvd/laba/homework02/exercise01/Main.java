@@ -1,5 +1,6 @@
 package com.solvd.laba.homework02.exercise01;
 
+import com.solvd.laba.homework02.exercise01.UI.UI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,11 +20,11 @@ public class Main {
         LOGGER.info("Main started");
         LegalOffice office = new LegalOffice();
 
-        Entity clientA = LegalOfficeGenerator.generatePerson();
-        Entity clientB = LegalOfficeGenerator.generatePerson();
-        Entity clientC = LegalOfficeGenerator.generateCompany();
-        Entity clientD = new Company("Some New Company");
-        ArrayList<Entity> caseClients = new ArrayList<>();
+        IEntity clientA = LegalOfficeGenerator.generatePerson();
+        IEntity clientB = LegalOfficeGenerator.generatePerson();
+        IEntity clientC = LegalOfficeGenerator.generateCompany();
+        IEntity clientD = new Company("Some New Company");
+        ArrayList<IEntity> caseClients = new ArrayList<>();
         caseClients.add(clientA);
         caseClients.add(clientB);
         caseClients.add(clientC);
@@ -101,7 +102,7 @@ public class Main {
         //UI ui = new ClientUI(office, clientB);
         UI ui = new UI(office);
         //UI ui = new UI(LegalOfficeGenerator.generateLegalOffice());
-        ui.start();
+        ui.show();
 
     }
 

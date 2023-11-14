@@ -38,7 +38,7 @@ public class LegalOffice {
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public List<LegalCase> getClientCases(Entity client) {
+    public List<LegalCase> getClientCases(IEntity client) {
         return this.cases.stream()
                 .filter(legalCase -> legalCase.haveClient(client))
                 .collect(Collectors.toUnmodifiableList());
@@ -54,8 +54,8 @@ public class LegalOffice {
         this.cases.remove(legalCase);
     }
 
-    public Set<Entity> getClients() {
-        HashSet<Entity> clients = new HashSet<>();
+    public Set<IEntity> getClients() {
+        HashSet<IEntity> clients = new HashSet<>();
         for (LegalCase legalCase : this.cases) {
             clients.addAll(cases.getFirst().getClients());
         }
@@ -63,7 +63,7 @@ public class LegalOffice {
         return Collections.unmodifiableSet(clients);
     }
 
-    public List<Appointment> getClientAppointments(Entity client) {
+    public List<Appointment> getClientAppointments(IEntity client) {
         List<Appointment> appointments = new ArrayList<>();
         for (LegalCase legalCase : this.cases) {
             appointments.addAll(legalCase.getClientAppointments(client));

@@ -2,7 +2,7 @@ package com.solvd.laba.homework02.exercise01;
 
 import java.util.Objects;
 
-public class Company extends Entity {
+public class Company implements IEntity {
     private final String name;
 
     public Company(String name) {

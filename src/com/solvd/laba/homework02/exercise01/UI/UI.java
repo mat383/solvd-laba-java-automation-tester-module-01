@@ -1,12 +1,13 @@
-package com.solvd.laba.homework02.exercise01;
+package com.solvd.laba.homework02.exercise01.UI;
 
+import com.solvd.laba.homework02.exercise01.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.*;
 
-public class UI {
+public class UI implements Showable {
 
     private static final Logger LOGGER = LogManager.getLogger(LegalOffice.class.getName());
     private final LegalOffice office;
@@ -19,7 +20,7 @@ public class UI {
         return office;
     }
 
-    public void start() {
+    public void show() {
         LOGGER.info("UI Started");
         casesView();
     }
@@ -109,7 +110,7 @@ public class UI {
         System.out.println();
 
         System.out.println("** Clients");
-        for (Entity client : legalCase.getClients()) {
+        for (IEntity client : legalCase.getClients()) {
             System.out.println("- " + client);
         }
         System.out.println();
@@ -207,13 +208,13 @@ public class UI {
                     }
                     break;
                 case ACTION_ADD_EXISTING:
-                    List<Entity> existingClients = new ArrayList<>(this.office.getClients());
+                    List<IEntity> existingClients = new ArrayList<>(this.office.getClients());
                     for (int i = 0; i < existingClients.size(); ++i) {
                         System.out.printf("%02d. %s\n", i + 1, existingClients.get(i));
                     }
                     // displayed numbers start at 1, so index = selectedNumber - 1
                     int selectedClientNumber = selectNumericOption("Select client to add: ", 1, existingClients.size());
-                    Entity selectedClient = existingClients.get(selectedClientNumber - 1);
+                    IEntity selectedClient = existingClients.get(selectedClientNumber - 1);
 
                     try {
                         legalCase.addClient(selectedClient);
@@ -228,7 +229,7 @@ public class UI {
                     } else {
                         System.out.println("Clients:");
                     }
-                    for (Entity client : legalCase.getClients()) {
+                    for (IEntity client : legalCase.getClients()) {
                         System.out.printf("- %s\n", client);
                     }
                     break;
@@ -245,7 +246,7 @@ public class UI {
         }
     }
 
-    protected Entity createClient() {
+    protected IEntity createClient() {
         // TODO add option to create Person or Company
         String id = promptForString("Id: ");
         String firstName = promptForString("First name: ");

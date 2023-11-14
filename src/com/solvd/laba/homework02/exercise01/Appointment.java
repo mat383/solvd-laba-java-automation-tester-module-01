@@ -13,10 +13,10 @@ public class Appointment extends TimeSpan {
     private Appointment.Type type;
     private Address location;
     private String details;
-    private ArrayList<Entity> participants = new ArrayList<>();
+    private ArrayList<IEntity> participants = new ArrayList<>();
 
     public Appointment(Appointment.Type type, LocalDateTime start, LocalDateTime end,
-                       Address location, String details, List<Entity> participants) {
+                       Address location, String details, List<IEntity> participants) {
         this(type, start, end, location, details);
         this.participants.addAll(participants);
     }
@@ -84,22 +84,22 @@ public class Appointment extends TimeSpan {
         this.details = details;
     }
 
-    public ArrayList<Entity> getParticipants() {
+    public ArrayList<IEntity> getParticipants() {
         return participants;
     }
 
-    public void addParticipant(Entity participant) {
+    public void addParticipant(IEntity participant) {
         if (haveParticipant(participant)) {
             throw new IllegalArgumentException("Appointments already have participant '" + participant + "'");
         }
         this.participants.add(participant);
     }
 
-    public void removeParticipant(Entity participant) {
+    public void removeParticipant(IEntity participant) {
         this.participants.remove(participant);
     }
 
-    public boolean haveParticipant(Entity participant) {
+    public boolean haveParticipant(IEntity participant) {
         return this.participants.contains(participant);
     }
 }
