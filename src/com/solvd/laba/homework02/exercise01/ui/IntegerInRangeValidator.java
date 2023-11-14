@@ -1,4 +1,4 @@
-package com.solvd.laba.homework02.exercise01.UI;
+package com.solvd.laba.homework02.exercise01.ui;
 
 public class IntegerInRangeValidator implements IValidator<Integer> {
     private final Integer minimum;

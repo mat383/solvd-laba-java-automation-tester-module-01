@@ -1,6 +1,6 @@
 package com.solvd.laba.homework02.exercise01;
 
-import com.solvd.laba.homework02.exercise01.UI.UI;
+import com.solvd.laba.homework02.exercise01.ui.UI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -80,8 +80,8 @@ public class Main {
 
         Address courtAddress = new Address("Poland", "Warsaw", "00-123",
                 "Legal Street", "1a", "2b");
-        LocalDateTime courtStart = LocalDateTime.of(2023, 11, 10, 12, 00, 00);
-        LocalDateTime courtEnd = LocalDateTime.of(2023, 11, 10, 15, 00, 00);
+        LocalDateTime courtStart = LocalDateTime.of(2023, 11, 10, 12, 0, 0);
+        LocalDateTime courtEnd = LocalDateTime.of(2023, 11, 10, 15, 0, 0);
         Appointment courtHearing = new Appointment(Appointment.Type.COURT,
                 courtStart, courtEnd, courtAddress, "First Hearing", caseClients);
         caseA.addAppointment(courtHearing);

@@ -1,4 +1,4 @@
-package com.solvd.laba.homework02.exercise01.UI;
+package com.solvd.laba.homework02.exercise01.ui;
 
 import com.solvd.laba.homework02.exercise01.*;
 import org.apache.logging.log4j.LogManager;
