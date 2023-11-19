@@ -1,6 +1,6 @@
 package com.solvd.laba.homework02.exercise01.util;
 
-public class ExponentailAllocationStrategy implements IAllocationStrategy {
+public class ExponentialAllocationStrategy implements IAllocationStrategy {
     @Override
     public int initialSize(int requestedSize) {
         return requestedSize;

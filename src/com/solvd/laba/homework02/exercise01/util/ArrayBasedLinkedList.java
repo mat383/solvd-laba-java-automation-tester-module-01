@@ -25,7 +25,7 @@ public class ArrayBasedLinkedList<E> implements List<E> {
     }
 
 
-    private static IAllocationStrategy defaultAllocationStrategy = new ExponentailAllocationStrategy();
+    private static IAllocationStrategy defaultAllocationStrategy = new ExponentialAllocationStrategy();
 
     /**
      * special index used to indicate empty node
@@ -125,9 +125,7 @@ public class ArrayBasedLinkedList<E> implements List<E> {
     @Override
     public boolean contains(Object o) {
         for (Object e : this) {
-            if (o == null && e == null) {
-                return true;
-            } else if (o != null && o.equals(e)) {
+            if (Objects.equals(o, e)) {
                 return true;
             }
         }
@@ -186,14 +184,40 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         this.lastNode = newIndex;
         this.firstNode = this.firstNode == EMPTY_NODE ? newIndex : this.lastNode;
         this.size++;
-        
+
+        // if you didn't add the element at the end of internal array
+        // then it becomes unordered (size was increased in previous line)
+        if (newIndex != (this.size - 1)) {
+            this.isNodesArraySorted = false;
+        }
+
         return true;
     }
 
     @Override
+    public E remove(int index) {
+        if (index < 0 || this.size <= index) {
+            throw new ArrayIndexOutOfBoundsException("Index " + Integer.toString(index) + " out of bounds");
+        }
+
+        int nodesIndex = findInternalPosition(index);
+        if (nodesIndex == EMPTY_NODE) {
+            throw new RuntimeException("Unable to find specified index: " + Integer.toString(index));
+        }
+
+        return removeAtIntervalPosition(nodesIndex);
+    }
+
+    @Override
     public boolean remove(Object o) {
-        // TODO implement
-        return false;
+        int nodesIndex = findInternalPosition(o);
+
+        if (nodesIndex == EMPTY_NODE) {
+            return false;
+        } else {
+            removeAtIntervalPosition(nodesIndex);
+            return true;
+        }
     }
 
     @Override
@@ -250,11 +274,6 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
     }
 
-    @Override
-    public E remove(int index) {
-        // TODO implement
-        return null;
-    }
 
     @Override
     public int indexOf(Object o) {
@@ -341,6 +360,102 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         this.nodesNextIndex = newNodesNextIndex;
         this.nodesPrevIndex = newNodesPrevIndex;
         this.nodesIsEmpty = newNodesIsEmpty;
+    }
+
+
+    /**
+     * find position of element with given index in internal array of nodes
+     * return EMPTY_NODE if not found
+     *
+     * @param index position of element in list
+     * @return position if found, EMPTY_NODE otherwise
+     */
+    private int findInternalPosition(int index) {
+        if (this.isNodesArraySorted) {
+            return 0 <= index && index < this.size
+                    ? index
+                    : EMPTY_NODE;
+        }
+
+        int currentPos = this.firstNode;
+        int nodeIndex = 0;
+        while (currentPos != EMPTY_NODE) {
+            if (nodeIndex == index) {
+                return currentPos;
+            }
+            currentPos = this.nodesNextIndex[currentPos];
+            nodeIndex++;
+        }
+        return EMPTY_NODE;
+    }
+
+    /**
+     * find position of first occurrence of Object o in internal array of nodes
+     * return EMPTY_NODE if not found
+     *
+     * @param o object to be fount
+     * @return position if found, EMPTY_NODE otherwise
+     */
+    private int findInternalPosition(Object o) {
+        // search directly in nodes array
+        int currentPos = this.firstNode;
+        int nodeIndex = 0;
+        while (currentPos != EMPTY_NODE) {
+            if (Objects.equals(o, this.nodes[currentPos])) {
+                return currentPos;
+            }
+            currentPos = this.nodesNextIndex[currentPos];
+            nodeIndex++;
+        }
+
+        return EMPTY_NODE;
+    }
+
+    /**
+     * remove element identified by its index in nodes array
+     *
+     * @param internalIndex index of element in nodes array (different from index of this list)
+     * @return reference to removed element
+     */
+    private E removeAtIntervalPosition(int internalIndex) {
+        // TODO add bound checking
+        if (!this.nodesIsEmpty[internalIndex]) {
+            throw new IllegalArgumentException("Trying to remove empty element");
+        }
+
+        // check if you can guarantee that removal will not disturb order of nodes
+        // (can only be guaranteed if removing last element)
+        if (internalIndex != this.lastNode) {
+            this.isNodesArraySorted = false;
+        }
+
+        int prevNodeIndex = this.nodesPrevIndex[internalIndex];
+        int nextNodeIndex = this.nodesNextIndex[internalIndex];
+
+        // set previous
+        if (prevNodeIndex != EMPTY_NODE) {
+            this.nodesNextIndex[prevNodeIndex] = nextNodeIndex;
+        } else {
+            // removing first node
+            this.firstNode = nextNodeIndex;
+        }
+        // set next
+        if (nextNodeIndex != EMPTY_NODE) {
+            this.nodesPrevIndex[nextNodeIndex] = prevNodeIndex;
+        } else {
+            // removing last node
+            this.lastNode = prevNodeIndex;
+        }
+
+        // remove
+        E removedObject = (E) this.nodes[internalIndex];
+        this.nodes[internalIndex] = null;
+        this.nodesPrevIndex[internalIndex] = EMPTY_NODE;
+        this.nodesNextIndex[internalIndex] = EMPTY_NODE;
+        this.nodesIsEmpty[internalIndex] = true;
+        this.size--;
+
+        return removedObject;
     }
 
     private boolean checkIsNodesArraySorted() {
