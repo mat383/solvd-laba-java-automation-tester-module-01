@@ -252,7 +252,7 @@ public class LegalOfficeGenerator {
                 + randomElement(NUMBER_POSTFIX);
 
         return new Address(country, city, postalCode,
-                street, streetNumber, apartmentNumber);
+                street, streetNumber, apartmentNumber, true);
     }
 
 

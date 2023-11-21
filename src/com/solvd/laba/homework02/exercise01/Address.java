@@ -10,8 +10,34 @@ public class Address {
     private String streetNumber;
     private String apartmentNumber;
 
+    /**
+     * version of Address that ignores validation, doesn't throw AddressDoesntExists exception
+     *
+     * @param country
+     * @param city
+     * @param postalCode
+     * @param street
+     * @param streetNumber
+     * @param apartmentNumber
+     * @param ignoreValidation have to be true
+     */
     public Address(String country, String city, String postalCode,
-                   String street, String streetNumber, String apartmentNumber) {
+                   String street, String streetNumber, String apartmentNumber,
+                   boolean ignoreValidation) {
+        if (!ignoreValidation) {
+            throw new IllegalArgumentException(
+                    "ignoreValidation have to be true, this constructor is not designed for validation");
+        }
+        this.country = country;
+        this.city = city;
+        this.postalCode = postalCode;
+        this.street = street;
+        this.streetNumber = streetNumber;
+        this.apartmentNumber = apartmentNumber;
+    }
+
+    public Address(String country, String city, String postalCode,
+                   String street, String streetNumber, String apartmentNumber) throws AddressDoesntExistException {
         this.country = country;
         this.city = city;
         this.postalCode = postalCode;
@@ -19,8 +45,8 @@ public class Address {
         this.streetNumber = streetNumber;
         this.apartmentNumber = apartmentNumber;
 
-        if (!this.isAddresValid()) {
-            throw new IllegalArgumentException("Passed address is invalid");
+        if (!this.isAddressValid()) {
+            throw new AddressDoesntExistException("Passed address is invalid");
         }
     }
 
@@ -68,10 +94,10 @@ public class Address {
         return this.country;
     }
 
-    public void setCountry(String country) {
-        if (!isAddresValid(country, this.city, this.postalCode,
+    public void setCountry(String country) throws AddressDoesntExistException {
+        if (!isAddressValid(country, this.city, this.postalCode,
                 this.street, this.streetNumber, this.apartmentNumber)) {
-            throw new IllegalArgumentException("Passed address is invalid");
+            throw new AddressDoesntExistException("Passed address is invalid");
         }
         this.country = country;
     }
@@ -80,10 +106,10 @@ public class Address {
         return city;
     }
 
-    public void setCity(String city) {
-        if (!isAddresValid(this.country, city, this.postalCode,
+    public void setCity(String city) throws AddressDoesntExistException {
+        if (!isAddressValid(this.country, city, this.postalCode,
                 this.street, this.streetNumber, this.apartmentNumber)) {
-            throw new IllegalArgumentException("Passed address is invalid");
+            throw new AddressDoesntExistException("Passed address is invalid");
         }
         this.city = city;
     }
@@ -92,10 +118,10 @@ public class Address {
         return postalCode;
     }
 
-    public void setPostalCode(String postalCode) {
-        if (!isAddresValid(this.country, this.city, postalCode,
+    public void setPostalCode(String postalCode) throws AddressDoesntExistException {
+        if (!isAddressValid(this.country, this.city, postalCode,
                 this.street, this.streetNumber, this.apartmentNumber)) {
-            throw new IllegalArgumentException("Passed address is invalid");
+            throw new AddressDoesntExistException("Passed address is invalid");
         }
         this.postalCode = postalCode;
     }
@@ -104,10 +130,10 @@ public class Address {
         return street;
     }
 
-    public void setStreet(String street) {
-        if (!isAddresValid(this.country, this.city, this.postalCode,
+    public void setStreet(String street) throws AddressDoesntExistException {
+        if (!isAddressValid(this.country, this.city, this.postalCode,
                 street, this.streetNumber, this.apartmentNumber)) {
-            throw new IllegalArgumentException("Passed address is invalid");
+            throw new AddressDoesntExistException("Passed address is invalid");
         }
         this.street = street;
     }
@@ -116,10 +142,10 @@ public class Address {
         return streetNumber;
     }
 
-    public void setStreetNumber(String streetNumber) {
-        if (!isAddresValid(this.country, this.city, this.postalCode,
+    public void setStreetNumber(String streetNumber) throws AddressDoesntExistException {
+        if (!isAddressValid(this.country, this.city, this.postalCode,
                 this.street, streetNumber, this.apartmentNumber)) {
-            throw new IllegalArgumentException("Passed address is invalid");
+            throw new AddressDoesntExistException("Passed address is invalid");
         }
         this.streetNumber = streetNumber;
     }
@@ -128,22 +154,22 @@ public class Address {
         return apartmentNumber;
     }
 
-    public void setApartmentNumber(String apartmentNumber) {
-        if (!isAddresValid(this.country, this.city, this.postalCode,
+    public void setApartmentNumber(String apartmentNumber) throws AddressDoesntExistException {
+        if (!isAddressValid(this.country, this.city, this.postalCode,
                 this.street, this.streetNumber, apartmentNumber)) {
-            throw new IllegalArgumentException("Passed address is invalid");
+            throw new AddressDoesntExistException("Passed address is invalid");
         }
         this.apartmentNumber = apartmentNumber;
     }
 
-    private boolean isAddresValid() {
+    private boolean isAddressValid() {
         // TODO consider implementing
-        return isAddresValid(this.country, this.city, this.postalCode,
+        return isAddressValid(this.country, this.city, this.postalCode,
                 this.street, this.streetNumber, this.apartmentNumber);
     }
 
-    private boolean isAddresValid(String country, String city, String postalCode,
-                                  String street, String streetNumber, String apartmentNumber) {
+    private boolean isAddressValid(String country, String city, String postalCode,
+                                   String street, String streetNumber, String apartmentNumber) {
         // TODO consider implementing
         return true;
     }

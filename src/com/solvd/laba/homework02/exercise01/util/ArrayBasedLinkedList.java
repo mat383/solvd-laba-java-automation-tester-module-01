@@ -5,13 +5,36 @@ import java.util.*;
 
 public class ArrayBasedLinkedList<E> implements List<E> {
 
-    public class ArrayBasedLinkedListIterator implements Iterator<E> {
-        private int currentElementIndex = ArrayBasedLinkedList.this.firstNode;
+    public class ArrayBasedLinkedListIterator implements ListIterator<E> {
+        /**
+         * internal position of current element
+         */
+        private int currentElementIndex;
+        /**
+         * position on the list
+         */
+        private int listIndex;
+
+        public ArrayBasedLinkedListIterator() {
+            this.currentElementIndex = ArrayBasedLinkedList.this.firstNode;
+            this.listIndex = 0;
+        }
+
+        public ArrayBasedLinkedListIterator(int index) {
+            this.currentElementIndex = findInternalPosition(index);
+            this.listIndex = index;
+        }
 
         @Override
         public boolean hasNext() {
             return currentElementIndex != EMPTY_NODE
-                    && ArrayBasedLinkedList.this.nodesNextIndex[currentElementIndex] != ArrayBasedLinkedList.EMPTY_NODE;
+                    && ArrayBasedLinkedList.this.nodesNextIndex[currentElementIndex] != EMPTY_NODE;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return currentElementIndex != EMPTY_NODE
+                    && ArrayBasedLinkedList.this.nodesPrevIndex[currentElementIndex] != EMPTY_NODE;
         }
 
         @Override
@@ -20,7 +43,46 @@ public class ArrayBasedLinkedList<E> implements List<E> {
                 throw new NoSuchElementException("Collection have no next element");
             }
             this.currentElementIndex = ArrayBasedLinkedList.this.nodesNextIndex[currentElementIndex];
+            this.listIndex++;
             return (E) ArrayBasedLinkedList.this.nodes[currentElementIndex];
+        }
+
+        @Override
+        public E previous() {
+            if (!hasPrevious()) {
+                throw new NoSuchElementException("Collection have no previous element");
+            }
+            this.currentElementIndex = ArrayBasedLinkedList.this.nodesPrevIndex[currentElementIndex];
+            this.listIndex--;
+            return (E) ArrayBasedLinkedList.this.nodes[currentElementIndex];
+        }
+
+        @Override
+        public int nextIndex() {
+            return this.listIndex + 1;
+        }
+
+        @Override
+        public int previousIndex() {
+            return this.listIndex - 1;
+        }
+
+        @Override
+        public void remove() {
+            // TODO implement
+            throw new UnsupportedOperationException("not implemented yet");
+        }
+
+        @Override
+        public void set(E e) {
+            // TODO implement
+            throw new UnsupportedOperationException("not implemented yet");
+        }
+
+        @Override
+        public void add(E e) {
+            // TODO implement
+            throw new UnsupportedOperationException("not implemented yet");
         }
     }
 
@@ -33,9 +95,15 @@ public class ArrayBasedLinkedList<E> implements List<E> {
      */
     public static final int EMPTY_NODE = -1;
 
+    /**
+     * indicates whether it can be guaranteed that
+     * internal nodes array is ordered in a way
+     * that each node is at index corresponding
+     * to its position in list
+     */
     private boolean isNodesArraySorted;
     /**
-     * linked list nodes
+     * nodes of linked
      */
     private Object[] nodes;
     /**
@@ -78,7 +146,7 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         this.size = 0;
         this.firstNode = EMPTY_NODE;
         this.lastNode = EMPTY_NODE;
-        this.isNodesArraySorted = false;
+        this.isNodesArraySorted = true;
     }
 
     public ArrayBasedLinkedList(int requestedInitialCapacity) {
@@ -194,6 +262,42 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         return true;
     }
 
+
+    @Override
+    public void add(int index, E element) {
+        // if adding at the end then just use add
+        if (index == this.size) {
+            add(element);
+            return;
+        }
+
+        // check if internal array needs expanding
+        if (this.nodes.length - this.size < 1) {
+            expand(1);
+        }
+
+        int newIndex = findEmptyNode();
+        int nextIndex = findInternalPosition(index);
+        int prevIndex = this.nodesPrevIndex[nextIndex];
+
+        this.nodesIsEmpty[newIndex] = false;
+        this.nodesPrevIndex[newIndex] = prevIndex;
+        this.nodesNextIndex[newIndex] = nextIndex;
+
+        if (prevIndex != EMPTY_NODE) {
+            this.nodesNextIndex[prevIndex] = newIndex;
+        } else {
+            this.firstNode = newIndex;
+        }
+
+        // next element cannot be empty, see first if
+        this.nodesPrevIndex[nextIndex] = newIndex;
+
+        this.size++;
+        // there is no way to guarantee that internal array is ordered without calling checkIsNodesArraySorted
+        this.isNodesArraySorted = false;
+    }
+
     @Override
     public E remove(int index) {
         if (index < 0 || this.size <= index) {
@@ -222,81 +326,115 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        // TODO implement
-        return false;
+        // TODO improve this implementation
+        for (Object o : c) {
+            if (!contains(o)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        // TODO implement
-        return false;
+        for (E obj : c) {
+            add(obj);
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        // TODO implement
-        return false;
+        // TODO improve this implementation
+        int addAt = index;
+        for (E obj : c) {
+            add(addAt, obj);
+            addAt++;
+        }
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        // TODO implement
-        return false;
+        // TODO improve implementation
+        for (Object obj : c) {
+            remove(obj);
+        }
+        return true;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        // TODO implement
-        return false;
+        for (int i = 0; i < this.nodes.length; ++i) {
+            if (this.nodesIsEmpty[i]) {
+                continue;
+            }
+            if (!c.contains(this.nodes[i])) {
+                removeAtIntervalPosition(i);
+            }
+        }
+        return true;
     }
 
     @Override
     public void clear() {
-        // TODO implement
-
+        Arrays.fill(this.nodes, null);
+        Arrays.fill(this.nodesNextIndex, EMPTY_NODE);
+        Arrays.fill(this.nodesPrevIndex, EMPTY_NODE);
+        Arrays.fill(this.nodesIsEmpty, true);
+        this.size = 0;
+        this.firstNode = EMPTY_NODE;
+        this.lastNode = EMPTY_NODE;
+        this.isNodesArraySorted = true;
     }
 
     @Override
     public E get(int index) {
-        // TODO implement
-        return null;
+        return (E) this.nodes[findInternalPosition(index)];
     }
 
     @Override
     public E set(int index, E element) {
-        // TODO implement
-        return null;
-    }
-
-    @Override
-    public void add(int index, E element) {
-        // TODO implement
-
+        int internalPosition = findInternalPosition(index);
+        E prevValue = (E) this.nodes[internalPosition];
+        this.nodes[internalPosition] = element;
+        return prevValue;
     }
 
 
     @Override
     public int indexOf(Object o) {
-        // TODO implement
-        return 0;
+        int index = 0;
+        for (Object e : this) {
+            if (Objects.equals(e, o)) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        // TODO implement
-        return 0;
+        int index = 0;
+        int lastIndex = -1;
+        for (Object e : this) {
+            if (Objects.equals(e, o)) {
+                lastIndex = index;
+            }
+            index++;
+        }
+        return lastIndex;
     }
 
     @Override
     public ListIterator<E> listIterator() {
-        // TODO implement
-        return null;
+        return new ArrayBasedLinkedListIterator();
     }
 
     @Override
     public ListIterator<E> listIterator(int index) {
-        // TODO implement
-        return null;
+        return new ArrayBasedLinkedListIterator(index);
     }
 
     @Override
@@ -371,10 +509,13 @@ public class ArrayBasedLinkedList<E> implements List<E> {
      * @return position if found, EMPTY_NODE otherwise
      */
     private int findInternalPosition(int index) {
+        if (index < 0 || this.size <= index) {
+            throw new IndexOutOfBoundsException(
+                    "Index %d if of out bound (array size is %d)".formatted(index, this.size));
+
+        }
         if (this.isNodesArraySorted) {
-            return 0 <= index && index < this.size
-                    ? index
-                    : EMPTY_NODE;
+            return index;
         }
 
         int currentPos = this.firstNode;

@@ -274,19 +274,30 @@ public class UI {
 
     protected BigDecimal promptForBigDecimal(String prompt) {
         Scanner scanner = new Scanner(System.in);
-        System.out.print(prompt);
-        return new BigDecimal(scanner.next());
+        BigDecimal input = null;
+        while (input == null) {
+            try {
+                System.out.print(prompt);
+                input = new BigDecimal(scanner.next());
+            } catch (NumberFormatException e) {
+                System.out.println("Wrong input type. Please provide numeric option");
+            }
+        }
+        return input;
     }
 
     protected int selectNumericOption(String prompt, IValidator<Integer> validator) {
         Integer selection = null;
         while (selection == null || !validator.isValid(selection)) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print(prompt);
-            selection = scanner.nextInt();
-
-            if (!validator.isValid(selection)) {
-                System.out.printf("Option out of bonds \n");
+            try {
+                Scanner scanner = new Scanner(System.in);
+                System.out.print(prompt);
+                selection = scanner.nextInt();
+                if (!validator.isValid(selection)) {
+                    System.out.println("Option out of bonds");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Wrong input type. Please provide numeric option");
             }
         }
         return selection;
