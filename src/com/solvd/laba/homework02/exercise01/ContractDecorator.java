@@ -14,5 +14,4 @@ public abstract class ContractDecorator implements IContract {
     public String getDescription() {
         return contract.getDescription();
     }
-
 }
