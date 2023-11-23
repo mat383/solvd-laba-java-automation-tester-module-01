@@ -2,6 +2,7 @@ package com.solvd.laba.homework02.exercise01;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Appointment extends TimeSpan {
@@ -13,20 +14,25 @@ public class Appointment extends TimeSpan {
     private Appointment.Type type;
     private Address location;
     private String details;
-    private ArrayList<IEntity> participants = new ArrayList<>();
+    private List<IEntity> participants;
 
     public Appointment(Appointment.Type type, LocalDateTime start, LocalDateTime end,
                        Address location, String details, List<IEntity> participants) {
-        this(type, start, end, location, details);
-        this.participants.addAll(participants);
-    }
-
-    public Appointment(Appointment.Type type, LocalDateTime start, LocalDateTime end,
-                       Address location, String details) {
         super(start, end);
         this.type = type;
         this.location = location;
         this.details = details;
+        this.participants = new ArrayList<>(participants.size());
+
+        for (IEntity entity : participants) {
+            addParticipant(entity);
+        }
+
+    }
+
+    public Appointment(Appointment.Type type, LocalDateTime start, LocalDateTime end,
+                       Address location, String details) {
+        this(type, start, end, location, details, Collections.emptyList());
     }
 
 
@@ -84,13 +90,14 @@ public class Appointment extends TimeSpan {
         this.details = details;
     }
 
-    public ArrayList<IEntity> getParticipants() {
-        return participants;
+    public List<IEntity> getParticipants() {
+        return Collections.unmodifiableList(participants);
     }
 
-    public void addParticipant(IEntity participant) {
+    // used in constructor
+    public final void addParticipant(IEntity participant) {
         if (haveParticipant(participant)) {
-            throw new IllegalArgumentException("Appointments already have participant '" + participant + "'");
+            throw new EntityAlreadyAddedException("Appointments already have participant '" + participant + "'");
         }
         this.participants.add(participant);
     }
@@ -99,7 +106,8 @@ public class Appointment extends TimeSpan {
         this.participants.remove(participant);
     }
 
-    public boolean haveParticipant(IEntity participant) {
+    // used in constructor
+    public final boolean haveParticipant(IEntity participant) {
         return this.participants.contains(participant);
     }
 }

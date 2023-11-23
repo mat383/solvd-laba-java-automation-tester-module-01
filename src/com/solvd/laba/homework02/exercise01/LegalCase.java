@@ -15,9 +15,9 @@ public class LegalCase {
     /**
      * all entities related to case
      */
-    private final ArrayList<IEntity> clients = new ArrayList<>();
-    private final ArrayList<Appointment> appointments = new ArrayList<>();
-    private final ArrayList<LegalService> services = new ArrayList<>();
+    private final List<IEntity> clients = new ArrayList<>();
+    private final List<Appointment> appointments = new ArrayList<>();
+    private final List<LegalService> services = new ArrayList<>();
 
     public LegalCase(IContract contract, String description, boolean isOpened, List<IEntity> clients, List<Appointment> appointments) {
         if (contract == null) {
@@ -78,18 +78,13 @@ public class LegalCase {
      */
     public final void addClient(IEntity client) {
         if (haveClient(client)) {
-            throw new IllegalArgumentException("Case already have client '" + client + "'");
+            throw new EntityAlreadyAddedException("Case already have client '" + client + "'");
         }
         this.clients.add(client);
     }
 
-    public boolean haveClient(IEntity client) {
-        for (IEntity e : this.clients) {
-            if (e.equals(client)) {
-                return true;
-            }
-        }
-        return false;
+    public final boolean haveClient(IEntity client) {
+        return this.clients.contains(client);
     }
 
     public void removeClient(IEntity client) {

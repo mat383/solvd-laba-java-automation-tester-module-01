@@ -440,6 +440,11 @@ public class ArrayBasedLinkedList<E> implements List<E> {
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
         // TODO implement
+        /*
+        when iterating maybe use this.last/firstNode to check boundries
+        then it would be easy to create sublist with private constructor that
+        passes gets internal nodes array with modified last/firstNode
+         */
         return null;
     }
 
@@ -606,6 +611,11 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
     public void sortNodesArray() {
         // TODO implement
+        /*
+        this will be O(n)
+        just use firstNode and nodes next and
+        put each element at proper place
+         */
     }
 
     public boolean isNodesArraySorted() {
