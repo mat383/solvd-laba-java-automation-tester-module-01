@@ -10,10 +10,11 @@ public class TimeSpan {
 
     public TimeSpan(LocalDateTime start, LocalDateTime end) {
         if (start == null || end == null) {
+            // TODO consider allowing this, it would mean all time and duration should return infinity
             throw new IllegalArgumentException("Neither start nor end time can be null");
         }
         if (start.isAfter(end)) {
-            throw new IllegalArgumentException("Start time have to be before end time");
+            throw new TimeSpanHasNegativeDurationError("Start time have to be before end time");
         }
         this.start = start;
         this.end = end;
@@ -28,7 +29,7 @@ public class TimeSpan {
             throw new IllegalArgumentException("Parameter 'start' cannot be null");
         }
         if (start.isAfter(this.end)) {
-            throw new IllegalArgumentException("Start time have to be before end time");
+            throw new TimeSpanHasNegativeDurationError("Start time have to be before end time");
         }
         this.start = start;
     }
@@ -42,7 +43,7 @@ public class TimeSpan {
             throw new IllegalArgumentException("Parameter 'end' cannot be null");
         }
         if (this.start.isAfter(end)) {
-            throw new IllegalArgumentException("Start time have to be before end time");
+            throw new TimeSpanHasNegativeDurationError("Start time have to be before end time");
         }
         this.end = end;
     }
