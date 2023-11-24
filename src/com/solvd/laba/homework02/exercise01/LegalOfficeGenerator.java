@@ -191,7 +191,7 @@ public class LegalOfficeGenerator {
         Address location = generateAddress();
 
         Appointment generatedAppointment = new Appointment(type,
-                timeSpan.getStart(), timeSpan.getEnd(),
+                timeSpan.getStart().get(), timeSpan.getEnd().get(),
                 location, "Some random appointment");
 
         // add random participants from possible participants
@@ -210,6 +210,13 @@ public class LegalOfficeGenerator {
 
     }
 
+
+    /**
+     * generate finite timespan
+     *
+     * @param inFuture
+     * @return
+     */
     public static TimeSpan generateTimeSpan(boolean inFuture) {
         Random random = new Random();
         int hour = random.nextInt(MIN_TIMESPAN_HOUR_START, MAX_TIMESPAN_HOUR_START + 1);

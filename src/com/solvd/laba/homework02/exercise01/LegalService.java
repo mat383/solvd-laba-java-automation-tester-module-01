@@ -41,7 +41,12 @@ public class LegalService {
     public LegalService(LegalService.Type type, TimeSpan timeSpan,
                         String description, String annotation,
                         double complexity, double priceModifier) {
+        // TODO change timeStamp to start, end to be more
+        //  consistent with rest of the code (Appointment, TimeSpan)
         this.type = type;
+        if (timeSpan.isInfinite()) {
+            throw new TimeSpanIsInfiniteException("Legal service timeSpan cannot be infinite");
+        }
         this.timeSpan = timeSpan;
         this.description = description;
         this.annotation = annotation;
@@ -73,10 +78,15 @@ public class LegalService {
     }
 
     public TimeSpan getTimeSpan() {
+        // FIXME timeSpan can be infinite use get/set start / end like appointment,
+        // TODO create interface ITimeSpan with default implementations for common methods
         return timeSpan;
     }
 
     public void setTimeSpan(TimeSpan timeSpan) {
+        if (timeSpan.isInfinite()) {
+            throw new TimeSpanIsInfiniteException("Legal service timeSpan cannot be infinite");
+        }
         this.timeSpan = timeSpan;
     }
 

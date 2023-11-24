@@ -97,7 +97,7 @@ public class LegalCase {
 
     public List<Appointment> getFutureAppointments() {
         return this.appointments.stream()
-                .filter(Appointment::inFuture)
+                .filter(Appointment::startsAfterNow)
                 .collect(Collectors.toUnmodifiableList());
     }
 

@@ -2,67 +2,82 @@ package com.solvd.laba.homework02.exercise01;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class TimeSpan {
-
-    private LocalDateTime start;
-    private LocalDateTime end;
+    private Optional<LocalDateTime> start;
+    private Optional<LocalDateTime> end;
 
     public TimeSpan(LocalDateTime start, LocalDateTime end) {
-        if (start == null || end == null) {
-            // TODO consider allowing this, it would mean all time and duration should return infinity
-            throw new IllegalArgumentException("Neither start nor end time can be null");
-        }
-        if (start.isAfter(end)) {
+        if ((start != null && end != null)
+                && start.isAfter(end)) {
             throw new TimeSpanHasNegativeDurationError("Start time have to be before end time");
         }
-        this.start = start;
-        this.end = end;
+        this.start = Optional.ofNullable(start);
+        this.end = Optional.ofNullable(end);
     }
 
-    public LocalDateTime getStart() {
+
+    public Optional<LocalDateTime> getStart() {
         return start;
     }
 
     public void setStart(LocalDateTime start) {
-        if (start == null) {
-            throw new IllegalArgumentException("Parameter 'start' cannot be null");
-        }
-        if (start.isAfter(this.end)) {
+        if ((start != null && this.end.isPresent())
+                && start.isAfter(this.end.get())) {
             throw new TimeSpanHasNegativeDurationError("Start time have to be before end time");
         }
-        this.start = start;
+        this.start = Optional.ofNullable(start);
     }
 
-    public LocalDateTime getEnd() {
+    public final boolean hasStart() {
+        return this.start.isPresent();
+    }
+
+    public Optional<LocalDateTime> getEnd() {
         return end;
     }
 
     public void setEnd(LocalDateTime end) {
-        if (end == null) {
-            throw new IllegalArgumentException("Parameter 'end' cannot be null");
-        }
-        if (this.start.isAfter(end)) {
+        if ((this.start.isPresent() && end != null)
+                && this.start.get().isAfter(end)) {
             throw new TimeSpanHasNegativeDurationError("Start time have to be before end time");
         }
-        this.end = end;
+        this.end = Optional.ofNullable(end);
     }
 
+    public final boolean hasEnd() {
+        return this.end.isPresent();
+    }
+
+    public final boolean isInfinite() {
+        return !(hasStart() && hasEnd());
+    }
+
+    /**
+     * returns duration of TimeSpan, requires that underlying interval is finite
+     * otherwise throws TimeSpanIsInfinite
+     *
+     * @return
+     */
     public Duration duration() {
-        return Duration.between(this.start, this.end);
+        if (isInfinite()) {
+            throw new TimeSpanIsInfiniteException("To get duration TimeSpan has to be finite.");
+        }
+        return Duration.between(this.start.get(), this.end.get());
     }
 
-    /**
-     * checks if TimeSpan starts after relativeTo parameter
-     */
-    public boolean inFuture(LocalDateTime relativeTo) {
-        return this.start.isAfter(relativeTo);
+
+    public boolean startsAfter(LocalDateTime dateTime) {
+        if (!hasStart()) {
+            return false;
+        } else {
+            return this.start.get().isAfter(dateTime);
+        }
     }
 
-    /**
-     * checks if TimeSpan starts after current time
-     */
-    public boolean inFuture() {
-        return inFuture(LocalDateTime.now());
+
+    public boolean startsAfterNow() {
+        return startsAfter(LocalDateTime.now());
     }
 }

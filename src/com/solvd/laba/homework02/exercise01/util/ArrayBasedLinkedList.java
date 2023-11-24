@@ -135,6 +135,11 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         }
         this.allocationStrategy = allocationStrategy;
         int initialCapacity = allocationStrategy.initialSize(requestedInitialCapacity);
+        if (initialCapacity < requestedInitialCapacity) {
+            throw new AllocationStrategyProvidedSizeNotSufficientException(
+                    "Requested initial capacity: %d, AllocationStrategy suggested capacity: %d"
+                            .formatted(requestedInitialCapacity, initialCapacity));
+        }
 
         this.nodes = new Object[initialCapacity];
         this.nodesNextIndex = new int[initialCapacity];
@@ -481,7 +486,13 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         if (expansionSize < 0) {
             throw new IllegalArgumentException("expansionSize cannot be negative");
         }
-        int newSize = this.allocationStrategy.expandedSize(this.nodes.length + expansionSize, this.nodes.length);
+        int requestedSize = this.nodes.length + expansionSize;
+        int newSize = this.allocationStrategy.expandedSize(requestedSize, this.nodes.length);
+        if (newSize < requestedSize) {
+            throw new AllocationStrategyProvidedSizeNotSufficientException(
+                    "New size (%d) is smaller than requested size(%d)"
+                            .formatted(newSize, requestedSize));
+        }
 
         // allocate
         Object[] newNodes = new Object[newSize];
