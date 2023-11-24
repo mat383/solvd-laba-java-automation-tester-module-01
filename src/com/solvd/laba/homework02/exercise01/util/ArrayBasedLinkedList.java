@@ -5,87 +5,6 @@ import java.util.*;
 
 public class ArrayBasedLinkedList<E> implements List<E> {
 
-    public class ArrayBasedLinkedListIterator implements ListIterator<E> {
-        /**
-         * internal position of current element
-         */
-        private int currentElementIndex;
-        /**
-         * position on the list
-         */
-        private int listIndex;
-
-        public ArrayBasedLinkedListIterator() {
-            this.currentElementIndex = ArrayBasedLinkedList.this.firstNode;
-            this.listIndex = 0;
-        }
-
-        public ArrayBasedLinkedListIterator(int index) {
-            this.currentElementIndex = findInternalPosition(index);
-            this.listIndex = index;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return currentElementIndex != EMPTY_NODE
-                    && ArrayBasedLinkedList.this.nodesNextIndex[currentElementIndex] != EMPTY_NODE;
-        }
-
-        @Override
-        public boolean hasPrevious() {
-            return currentElementIndex != EMPTY_NODE
-                    && ArrayBasedLinkedList.this.nodesPrevIndex[currentElementIndex] != EMPTY_NODE;
-        }
-
-        @Override
-        public E next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException("Collection have no next element");
-            }
-            this.currentElementIndex = ArrayBasedLinkedList.this.nodesNextIndex[currentElementIndex];
-            this.listIndex++;
-            return (E) ArrayBasedLinkedList.this.nodes[currentElementIndex];
-        }
-
-        @Override
-        public E previous() {
-            if (!hasPrevious()) {
-                throw new NoSuchElementException("Collection have no previous element");
-            }
-            this.currentElementIndex = ArrayBasedLinkedList.this.nodesPrevIndex[currentElementIndex];
-            this.listIndex--;
-            return (E) ArrayBasedLinkedList.this.nodes[currentElementIndex];
-        }
-
-        @Override
-        public int nextIndex() {
-            return this.listIndex + 1;
-        }
-
-        @Override
-        public int previousIndex() {
-            return this.listIndex - 1;
-        }
-
-        @Override
-        public void remove() {
-            // TODO implement
-            throw new UnsupportedOperationException("not implemented yet");
-        }
-
-        @Override
-        public void set(E e) {
-            // TODO implement
-            throw new UnsupportedOperationException("not implemented yet");
-        }
-
-        @Override
-        public void add(E e) {
-            // TODO implement
-            throw new UnsupportedOperationException("not implemented yet");
-        }
-    }
-
 
     private static IAllocationStrategy defaultAllocationStrategy = new ExponentialAllocationStrategy();
 
@@ -631,5 +550,95 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
     public boolean isNodesArraySorted() {
         return this.isNodesArraySorted;
+    }
+
+
+    public class ArrayBasedLinkedListIterator implements ListIterator<E> {
+        /**
+         * internal position of current element
+         */
+        private int currentElementIndex;
+        /**
+         * position on the list
+         */
+        private int listIndex;
+
+        public ArrayBasedLinkedListIterator() {
+            this.currentElementIndex = ArrayBasedLinkedList.this.firstNode;
+            this.listIndex = 0;
+        }
+
+        public ArrayBasedLinkedListIterator(int index) {
+            this.currentElementIndex = findInternalPosition(index);
+            this.listIndex = index;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return currentElementIndex != EMPTY_NODE
+                    && ArrayBasedLinkedList.this.nodesNextIndex[currentElementIndex] != EMPTY_NODE;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return currentElementIndex != EMPTY_NODE
+                    && ArrayBasedLinkedList.this.nodesPrevIndex[currentElementIndex] != EMPTY_NODE;
+        }
+
+        @Override
+        public E next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException("Collection have no next element");
+            }
+            this.currentElementIndex = ArrayBasedLinkedList.this.nodesNextIndex[currentElementIndex];
+            this.listIndex++;
+            return (E) ArrayBasedLinkedList.this.nodes[currentElementIndex];
+        }
+
+        @Override
+        public E previous() {
+            if (!hasPrevious()) {
+                throw new NoSuchElementException("Collection have no previous element");
+            }
+            this.currentElementIndex = ArrayBasedLinkedList.this.nodesPrevIndex[currentElementIndex];
+            this.listIndex--;
+            return (E) ArrayBasedLinkedList.this.nodes[currentElementIndex];
+        }
+
+        @Override
+        public int nextIndex() {
+            return this.listIndex + 1;
+        }
+
+        @Override
+        public int previousIndex() {
+            return this.listIndex - 1;
+        }
+
+        @Override
+        public void remove() {
+            // TODO implement
+            throw new UnsupportedOperationException("not implemented yet");
+        }
+
+        @Override
+        public void set(E e) {
+            // TODO implement
+            throw new UnsupportedOperationException("not implemented yet");
+        }
+
+        @Override
+        public void add(E e) {
+            // TODO implement
+            throw new UnsupportedOperationException("not implemented yet");
+        }
+    }
+
+
+    private class ArrayBasedLinkedListView extends AbstractList<E> {
+        // TODO finish implementing
+        // look at:
+        // - https://docs.oracle.com/javase/8/docs/api/java/util/AbstractList.html
+        // - https://hg.openjdk.org/jdk/jdk/file/default/src/java.base/share/classes/java/util/AbstractList.java
     }
 }
