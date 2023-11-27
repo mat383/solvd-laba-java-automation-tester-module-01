@@ -484,6 +484,7 @@ public class ArrayBasedLinkedList<E> implements List<E> {
             nodeIndex++;
         }
 
+        // TODO consider throwing NoSuchElementException
         return EMPTY_NODE;
     }
 
@@ -555,34 +556,32 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
     public class ArrayBasedLinkedListIterator implements ListIterator<E> {
         /**
-         * internal position of current element
+         * internal position of next element
          */
-        private int currentElementIndex;
+        private int nextElementIndex;
         /**
-         * position on the list
+         * position of the next element on the list (it's index)
          */
-        private int listIndex;
+        private int nextListIndex;
 
         public ArrayBasedLinkedListIterator() {
-            this.currentElementIndex = ArrayBasedLinkedList.this.firstNode;
-            this.listIndex = 0;
+            this.nextElementIndex = ArrayBasedLinkedList.this.firstNode;
+            this.nextListIndex = 0;
         }
 
         public ArrayBasedLinkedListIterator(int index) {
-            this.currentElementIndex = findInternalPosition(index);
-            this.listIndex = index;
+            this.nextElementIndex = findInternalPosition(index);
+            this.nextListIndex = index;
         }
 
         @Override
         public boolean hasNext() {
-            return currentElementIndex != EMPTY_NODE
-                    && ArrayBasedLinkedList.this.nodesNextIndex[currentElementIndex] != EMPTY_NODE;
+            return this.nextListIndex < ArrayBasedLinkedList.this.size();
         }
 
         @Override
         public boolean hasPrevious() {
-            return currentElementIndex != EMPTY_NODE
-                    && ArrayBasedLinkedList.this.nodesPrevIndex[currentElementIndex] != EMPTY_NODE;
+            return this.nextListIndex > 0;
         }
 
         @Override
@@ -590,9 +589,13 @@ public class ArrayBasedLinkedList<E> implements List<E> {
             if (!hasNext()) {
                 throw new NoSuchElementException("Collection have no next element");
             }
-            this.currentElementIndex = ArrayBasedLinkedList.this.nodesNextIndex[currentElementIndex];
-            this.listIndex++;
-            return (E) ArrayBasedLinkedList.this.nodes[currentElementIndex];
+            // get next element
+            E nextElement = (E) ArrayBasedLinkedList.this.nodes[this.nextElementIndex];
+            // move pointers to next element
+            this.nextElementIndex = ArrayBasedLinkedList.this.nodesNextIndex[this.nextElementIndex];
+            this.nextListIndex++;
+
+            return nextElement;
         }
 
         @Override
@@ -600,19 +603,19 @@ public class ArrayBasedLinkedList<E> implements List<E> {
             if (!hasPrevious()) {
                 throw new NoSuchElementException("Collection have no previous element");
             }
-            this.currentElementIndex = ArrayBasedLinkedList.this.nodesPrevIndex[currentElementIndex];
-            this.listIndex--;
-            return (E) ArrayBasedLinkedList.this.nodes[currentElementIndex];
+            this.nextElementIndex = ArrayBasedLinkedList.this.nodesPrevIndex[this.nextElementIndex];
+            this.nextListIndex--;
+            return (E) ArrayBasedLinkedList.this.nodes[this.nextElementIndex];
         }
 
         @Override
         public int nextIndex() {
-            return this.listIndex + 1;
+            return this.nextListIndex;
         }
 
         @Override
         public int previousIndex() {
-            return this.listIndex - 1;
+            return this.nextListIndex - 1;
         }
 
         @Override
@@ -635,10 +638,94 @@ public class ArrayBasedLinkedList<E> implements List<E> {
     }
 
 
-    private class ArrayBasedLinkedListView extends AbstractList<E> {
+    private class ArrayBasedLinkedListView extends AbstractSequentialList<E> {
         // TODO finish implementing
         // look at:
         // - https://docs.oracle.com/javase/8/docs/api/java/util/AbstractList.html
         // - https://hg.openjdk.org/jdk/jdk/file/default/src/java.base/share/classes/java/util/AbstractList.java
+
+        /**
+         * internal position (in nodes array) of node before first node of sublist
+         * if sublist starts with index 0, then it's equal to EMPTY_NODE
+         */
+        private final int nodeBeforeFirst;
+
+        /**
+         * internal position (in nodes array) of node after last node of sublist
+         * if sublist enda with last element of list, then it's equal to EMPTY_NODE
+         */
+        private final int nodeAfterLast;
+
+
+        /**
+         * @param fromIndex index of the first element of sublist
+         * @param toIndex   index after last element of the sublist, can be equal to list.size
+         */
+        public ArrayBasedLinkedListView(int fromIndex, int toIndex) {
+            if (fromIndex == 0) {
+                this.nodeBeforeFirst = EMPTY_NODE;
+            } else {
+                int firstNodeIndex = ArrayBasedLinkedList.this.findInternalPosition(fromIndex);
+                this.nodeBeforeFirst = ArrayBasedLinkedList.this.nodesPrevIndex[firstNodeIndex];
+            }
+            if (toIndex == ArrayBasedLinkedList.this.size) {
+                this.nodeAfterLast = EMPTY_NODE;
+            } else {
+                this.nodeAfterLast = ArrayBasedLinkedList.this.findInternalPosition(toIndex);
+            }
+        }
+        /*
+        how to make sublist of empty list
+        from and to index is 0
+         */
+
+        @Override
+        public ListIterator<E> listIterator(int index) {
+            return null;
+        }
+
+        @Override
+        public int size() {
+            int firstElementIndex;
+            // TODO move this logic to other method (sth like get index)
+            // find index of the first node of sublist
+            if (this.nodeBeforeFirst == EMPTY_NODE) {
+                firstElementIndex = 0;
+            } else if (ArrayBasedLinkedList.this.isNodesArraySorted) {
+                firstElementIndex = this.nodeBeforeFirst + 1;
+            } else {
+                int currentNode = ArrayBasedLinkedList.this.firstNode;
+                firstElementIndex = 1;
+                // TODO use iterator for this
+                while (currentNode != this.nodeBeforeFirst) {
+                    currentNode = ArrayBasedLinkedList.this.nodesNextIndex[currentNode];
+                    firstElementIndex++;
+                }
+            }
+
+            // TODO make it more clear
+            // last element in set to -1 if list is empty
+            int lastElementIndex;
+            // find index of the last node of sublist
+            if (this.nodeAfterLast == EMPTY_NODE) {
+                lastElementIndex = ArrayBasedLinkedList.this.size - 1;
+            } else if (ArrayBasedLinkedList.this.isNodesArraySorted) {
+                lastElementIndex = this.nodeAfterLast - 1;
+            } else {
+                int currentNode = ArrayBasedLinkedList.this.lastNode;
+                // size - 2 is element before last
+                lastElementIndex = ArrayBasedLinkedList.this.size - 2;
+                while (currentNode != this.nodeAfterLast) {
+                    currentNode = ArrayBasedLinkedList.this.nodesPrevIndex[currentNode];
+                    lastElementIndex++;
+                }
+            }
+
+            return lastElementIndex - firstElementIndex + 1;
+        }
+
+        private class ViewIterator implements ListIterator<E> {
+
+        }
     }
 }
