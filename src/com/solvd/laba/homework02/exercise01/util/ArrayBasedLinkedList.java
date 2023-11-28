@@ -365,7 +365,7 @@ public class ArrayBasedLinkedList<E> implements List<E> {
     public List<E> subList(int fromIndex, int toIndex) {
         // TODO implement
         /*
-        when iterating maybe use this.last/firstNode to check boundries
+        when iterating maybe use this.last/firstNode to check boundaries
         then it would be easy to create sublist with private constructor that
         passes gets internal nodes array with modified last/firstNode
          */
@@ -375,7 +375,7 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
     // linked list specific methods
 
-    // arraylist spacific methods
+    // arraylist specific methods
 
 
     // helper methods
@@ -556,6 +556,15 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
     public class ArrayBasedLinkedListIterator implements ListIterator<E> {
         /**
+         * describes state of iterator with regard to set and remove operations
+         */
+        public enum State {
+            CANNOT_SET_OR_REMOVE,
+            AFTER_NEXT,
+            AFTER_PREV
+        }
+
+        /**
          * internal position of next element
          */
         private int nextElementIndex;
@@ -563,15 +572,20 @@ public class ArrayBasedLinkedList<E> implements List<E> {
          * position of the next element on the list (it's index)
          */
         private int nextListIndex;
+        private State state;
 
         public ArrayBasedLinkedListIterator() {
             this.nextElementIndex = ArrayBasedLinkedList.this.firstNode;
             this.nextListIndex = 0;
+            this.state = State.CANNOT_SET_OR_REMOVE;
         }
 
         public ArrayBasedLinkedListIterator(int index) {
+            // TODO what about edge case with empty list?
+            // FIXME inconsistent behaviour: default ctro works with empty list, while this won't
             this.nextElementIndex = findInternalPosition(index);
             this.nextListIndex = index;
+            this.state = State.CANNOT_SET_OR_REMOVE;
         }
 
         @Override
@@ -580,8 +594,8 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         }
 
         @Override
-        public boolean hasPrevious() {
-            return this.nextListIndex > 0;
+        public int nextIndex() {
+            return this.nextListIndex;
         }
 
         @Override
@@ -595,7 +609,19 @@ public class ArrayBasedLinkedList<E> implements List<E> {
             this.nextElementIndex = ArrayBasedLinkedList.this.nodesNextIndex[this.nextElementIndex];
             this.nextListIndex++;
 
+            this.state = State.AFTER_NEXT;
+
             return nextElement;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return this.nextListIndex > 0;
+        }
+        
+        @Override
+        public int previousIndex() {
+            return this.nextListIndex - 1;
         }
 
         @Override
@@ -605,35 +631,39 @@ public class ArrayBasedLinkedList<E> implements List<E> {
             }
             this.nextElementIndex = ArrayBasedLinkedList.this.nodesPrevIndex[this.nextElementIndex];
             this.nextListIndex--;
+
+            this.state = State.AFTER_PREV;
+
             return (E) ArrayBasedLinkedList.this.nodes[this.nextElementIndex];
         }
 
         @Override
-        public int nextIndex() {
-            return this.nextListIndex;
-        }
-
-        @Override
-        public int previousIndex() {
-            return this.nextListIndex - 1;
+        public void add(E e) {
+            if (this.nextElementIndex == EMPTY_NODE) {
+                // adding to the end of the list
+                ArrayBasedLinkedList.this.add(e);
+            } else {
+                // adding in the middle or in the beginning of the list
+                ArrayBasedLinkedList.this.add(this.nextListIndex - 1, e);
+            }
+            this.nextListIndex++;
+            this.state = State.CANNOT_SET_OR_REMOVE;
         }
 
         @Override
         public void remove() {
             // TODO implement
             throw new UnsupportedOperationException("not implemented yet");
+
+            this.state = State.CANNOT_SET_OR_REMOVE;
         }
 
         @Override
         public void set(E e) {
             // TODO implement
             throw new UnsupportedOperationException("not implemented yet");
-        }
 
-        @Override
-        public void add(E e) {
-            // TODO implement
-            throw new UnsupportedOperationException("not implemented yet");
+            this.state = State.CANNOT_SET_OR_REMOVE;
         }
     }
 
