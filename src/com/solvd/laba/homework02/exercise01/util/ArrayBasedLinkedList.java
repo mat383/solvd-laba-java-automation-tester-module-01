@@ -158,23 +158,26 @@ public class ArrayBasedLinkedList<E> implements List<E> {
     /**
      * add element to the end of the list
      *
-     * @param e element whose presence in this collection is to be ensured
+     * @param element element whose presence in this collection is to be ensured
      * @return
      */
     @Override
-    public boolean add(E e) {
+    public boolean add(E element) {
         // check if internal array needs expanding
         if (this.nodes.length < this.size + 1) {
             expand(1);
         }
 
         int newIndex = findEmptyNode();
+        this.nodes[newIndex] = element;
         this.nodesIsEmpty[newIndex] = false;
-        this.nodesNextIndex[this.lastNode] = newIndex;
+        if (this.lastNode != EMPTY_NODE) {
+            this.nodesNextIndex[this.lastNode] = newIndex;
+        }
         this.nodesPrevIndex[newIndex] = this.lastNode;
         this.nodesNextIndex[newIndex] = EMPTY_NODE;
         this.lastNode = newIndex;
-        this.firstNode = this.firstNode == EMPTY_NODE ? newIndex : this.lastNode;
+        this.firstNode = this.firstNode == EMPTY_NODE ? newIndex : this.firstNode;
         this.size++;
 
         // if you didn't add the element at the end of internal array
@@ -204,6 +207,7 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         int nextIndex = findInternalPosition(index);
         int prevIndex = this.nodesPrevIndex[nextIndex];
 
+        this.nodes[newIndex] = element;
         this.nodesIsEmpty[newIndex] = false;
         this.nodesPrevIndex[newIndex] = prevIndex;
         this.nodesNextIndex[newIndex] = nextIndex;
@@ -363,25 +367,22 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
-        // TODO implement
-        /*
-        when iterating maybe use this.last/firstNode to check boundaries
-        then it would be easy to create sublist with private constructor that
-        passes gets internal nodes array with modified last/firstNode
-         */
-        return null;
+        return new ArrayBasedLinkedListView(fromIndex, toIndex);
     }
 
 
-    // linked list specific methods
-
-    // arraylist specific methods
-
-
     // helper methods
+
+    /**
+     * Finds empty space in internal array for new node,
+     * throws NoSuchElementException if there isn't any.
+     * At first, it tries to find empty space after last element,
+     * and if this fails then it will search from the beginning.
+     *
+     * @return index of empty node in internal array
+     */
     private int findEmptyNode() {
         if (this.nodes.length < this.size + 1) {
-            // TODO add custom exception type
             throw new NoSuchElementException("trying to find free node when there is none");
         }
         // try to find empty space after last item
@@ -520,7 +521,7 @@ public class ArrayBasedLinkedList<E> implements List<E> {
      */
     private E removeAtIntervalPosition(int internalIndex) {
         // TODO add bound checking
-        if (!this.nodesIsEmpty[internalIndex]) {
+        if (this.nodesIsEmpty[internalIndex]) {
             throw new IllegalArgumentException("Trying to remove empty element");
         }
 
@@ -560,17 +561,76 @@ public class ArrayBasedLinkedList<E> implements List<E> {
     }
 
     private boolean checkIsNodesArraySorted() {
-        // TODO implement
-        return false;
+        int nodeListPosition = 0;
+        int currentNode = this.firstNode;
+        while (currentNode != EMPTY_NODE) {
+            if (nodeListPosition != currentNode) {
+                return false;
+            }
+            nodeListPosition++;
+            currentNode = this.nodesNextIndex[currentNode];
+        }
+        return true;
     }
 
+    /**
+     * Sort internal nodes array so that internal position equals position in list,
+     * which makes cost of accessing elements similar to ArrayList.
+     * This will probably make structural modifications to the list, so using
+     * this method while some iterator or sublist is used will lead to undefined behaviour.
+     * The time cost of this operation is linear with respect to the size of the list.
+     */
     public void sortNodesArray() {
         // TODO implement
-        /*
-        this will be O(n)
-        just use firstNode and nodes next and
-        put each element at proper place
-         */
+        if (this.isNodesArraySorted) {
+            return;
+        }
+
+        int currentNodeIndex = this.firstNode;
+        // for each node check if it is on right position
+        // if not, swap it to the right position
+        for (int i = 0; i < this.size; i++) {
+            if (currentNodeIndex != i) {
+                // swap nodes at i and currentNodeIndex
+                // update neighboring nodes
+                if (this.nodesPrevIndex[currentNodeIndex] != EMPTY_NODE)
+                    this.nodesNextIndex[this.nodesPrevIndex[currentNodeIndex]] = i;
+                if (this.nodesNextIndex[currentNodeIndex] != EMPTY_NODE)
+                    this.nodesPrevIndex[this.nodesNextIndex[currentNodeIndex]] = i;
+                if (this.nodesPrevIndex[i] != EMPTY_NODE)
+                    this.nodesNextIndex[this.nodesPrevIndex[i]] = currentNodeIndex;
+                if (this.nodesNextIndex[i] != EMPTY_NODE)
+                    this.nodesPrevIndex[this.nodesNextIndex[i]] = currentNodeIndex;
+
+                // swap elements
+                E swapHelperObj = (E) this.nodes[i];
+                this.nodes[i] = this.nodes[currentNodeIndex];
+                this.nodes[currentNodeIndex] = swapHelperObj;
+
+                int swapHelperInt = this.nodesNextIndex[i];
+                this.nodesNextIndex[i] = this.nodesNextIndex[currentNodeIndex];
+                this.nodesNextIndex[currentNodeIndex] = swapHelperInt;
+
+                swapHelperInt = this.nodesPrevIndex[i];
+                this.nodesPrevIndex[i] = this.nodesPrevIndex[currentNodeIndex];
+                this.nodesPrevIndex[currentNodeIndex] = swapHelperInt;
+
+                boolean swapHelperBool = this.nodesIsEmpty[i];
+                this.nodesIsEmpty[i] = this.nodesIsEmpty[currentNodeIndex];
+                this.nodesIsEmpty[currentNodeIndex] = swapHelperBool;
+
+                // updateCurrentNodeIndex
+                currentNodeIndex = i;
+            }
+            currentNodeIndex = this.nodesNextIndex[currentNodeIndex];
+        }
+
+        // set first last node
+        if (this.size > 0) {
+            this.firstNode = 0;
+            this.lastNode = this.size - 1;
+        }
+        this.isNodesArraySorted = true;
     }
 
     public boolean isNodesArraySorted() {
@@ -643,8 +703,8 @@ public class ArrayBasedLinkedList<E> implements List<E> {
                     : ArrayBasedLinkedList.this.findListPosition(nodeAfterLast);
 
             int absoluteIndex = nodeBeforeFirst == EMPTY_NODE
-                    ? 0
-                    : nodeBeforeFirstListPosition + relativeIndex + 1;
+                    ? relativeIndex
+                    : nodeBeforeFirstListPosition + 1 + relativeIndex;
 
             // in case list is empty get first element from beginning pointer
             // to avoid out of bound exception
@@ -751,7 +811,13 @@ public class ArrayBasedLinkedList<E> implements List<E> {
                 }
                 case State.AFTER_NEXT -> {
                     // remove element before cursor
-                    int nodeToRemove = ArrayBasedLinkedList.this.nodesPrevIndex[this.nextElementIndex];
+                    int nodeToRemove = EMPTY_NODE;
+                    // check if iteration reached end of the list
+                    if (this.nextElementIndex == EMPTY_NODE) {
+                        nodeToRemove = ArrayBasedLinkedList.this.lastNode;
+                    } else {
+                        nodeToRemove = ArrayBasedLinkedList.this.nodesPrevIndex[this.nextElementIndex];
+                    }
                     ArrayBasedLinkedList.this.removeAtIntervalPosition(nodeToRemove);
                     this.nextListIndex--;
                 }
@@ -773,7 +839,12 @@ public class ArrayBasedLinkedList<E> implements List<E> {
                     throw new IllegalStateException("Wrong state, cannot set element");
                 }
                 case State.AFTER_NEXT -> {
-                    nodeToSet = ArrayBasedLinkedList.this.nodesPrevIndex[this.nextElementIndex];
+                    // check if iteration reached end of the list
+                    if (this.nextElementIndex == EMPTY_NODE) {
+                        nodeToSet = ArrayBasedLinkedList.this.lastNode;
+                    } else {
+                        nodeToSet = ArrayBasedLinkedList.this.nodesPrevIndex[this.nextElementIndex];
+                    }
                 }
                 case State.AFTER_PREV -> {
                     nodeToSet = this.nextElementIndex;
@@ -785,11 +856,6 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
 
     private class ArrayBasedLinkedListView extends AbstractSequentialList<E> {
-        // TODO finish implementing
-        // look at:
-        // - https://docs.oracle.com/javase/8/docs/api/java/util/AbstractList.html
-        // - https://hg.openjdk.org/jdk/jdk/file/default/src/java.base/share/classes/java/util/AbstractList.java
-
         /**
          * internal position (in nodes array) of node before first node of sublist
          * if sublist starts with index 0, then it's equal to EMPTY_NODE

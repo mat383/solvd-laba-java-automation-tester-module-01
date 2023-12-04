@@ -1,8 +1,12 @@
 package com.solvd.laba.homework02.exercise01;
 
-import com.solvd.laba.homework02.exercise01.util.ArrayBasedLinkedList;
+import com.solvd.laba.homework02.exercise01.ui.UI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -16,13 +20,6 @@ public class Main {
         LOGGER.info("Main started");
         LegalOffice office = new LegalOffice();
 
-        ArrayBasedLinkedList<Integer> testList = new ArrayBasedLinkedList<>(10);
-        for (int i = 0; i < 10; i++) {
-            testList.add(i);
-        }
-
-        System.out.println(testList);
-        /*
         IEntity clientA = LegalOfficeGenerator.generatePerson();
         IEntity clientB = LegalOfficeGenerator.generatePerson();
         IEntity clientC = LegalOfficeGenerator.generateCompany();
@@ -107,7 +104,6 @@ public class Main {
         //UI ui = new UI(LegalOfficeGenerator.generateLegalOffice());
         //UI ui = new FilteredUI(office, new LegalCasesClientFilter(clientA));
         ui.show();
-        */
     }
 
 
