@@ -14,6 +14,9 @@ public class UI {
     private final LegalOffice office;
 
     public UI(LegalOffice office) {
+        if (office == null) {
+            throw new IllegalArgumentException("office cannot be null");
+        }
         this.office = office;
     }
 
@@ -38,15 +41,17 @@ public class UI {
          */
         List<LegalCase> relevantCases = getCasesForCasesView();
         char selection = ' ';
-        final char ACTION_QUIT = 'q';
-        final char ACTION_DETAILS = 'd';
-        final char ACTION_ADD_CASE = 'a';
-        final char ACTION_REMOVE_CASE = 'r';
         final HashMap<Character, String> actions = new HashMap<>();
+        final char ACTION_QUIT = 'q';
         actions.put(ACTION_QUIT, "quit");
+        final char ACTION_DETAILS = 'd';
         actions.put(ACTION_DETAILS, "show case details");
+        final char ACTION_ADD_CASE = 'a';
         actions.put(ACTION_ADD_CASE, "add case");
+        final char ACTION_REMOVE_CASE = 'r';
         actions.put(ACTION_REMOVE_CASE, "remove case");
+        final char ACTION_UPCOMING_APPOINTMENTS = 'u';
+        actions.put(ACTION_UPCOMING_APPOINTMENTS, "show upcoming appointments");
 
         while (selection != ACTION_QUIT) {
             System.out.println();
@@ -90,6 +95,11 @@ public class UI {
                     relevantCases = getCasesForCasesView();
                     break;
 
+                case ACTION_UPCOMING_APPOINTMENTS:
+                    System.out.println("Upcoming appointments:");
+                    showUpcomingAppointments();
+                    break;
+
                 default:
                     System.out.printf("Choice doesn't match any action: '%c'\n", selection);
             }
@@ -130,6 +140,13 @@ public class UI {
         System.out.println();
 
 
+    }
+
+    protected void showUpcomingAppointments() {
+        getCasesForCasesView().stream()
+                .flatMap(legalCase -> legalCase.getFutureAppointments().stream())
+                .sorted(Comparator.comparing(Appointment::getStart))
+                .forEachOrdered(appointment -> System.out.println("- " + appointment.toString()));
     }
 
     protected void listCases(List<LegalCase> cases) {
@@ -175,7 +192,7 @@ public class UI {
 
         System.out.println("** Adding appointment");
         Address appointmentAddress = null;
-        while ( appointmentAddress == null ) {
+        while (appointmentAddress == null) {
             try {
                 appointmentAddress = promptForAddress("provide address: ");
             } catch (AddressDoesntExistException e) {

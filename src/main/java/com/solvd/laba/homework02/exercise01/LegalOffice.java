@@ -29,19 +29,19 @@ public class LegalOffice {
     public List<LegalCase> getOpenCases() {
         return this.cases.stream().
                 filter(LegalCase::isOpened)
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public List<LegalCase> getClosedCases() {
         return this.cases.stream().
                 filter(legalCase -> !legalCase.isOpened())
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public List<LegalCase> getClientCases(IEntity client) {
         return this.cases.stream()
                 .filter(legalCase -> legalCase.haveClient(client))
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public void addCase(LegalCase legalCase) {
@@ -55,20 +55,14 @@ public class LegalOffice {
     }
 
     public Set<IEntity> getClients() {
-        HashSet<IEntity> clients = new HashSet<>();
-        for (LegalCase legalCase : this.cases) {
-            clients.addAll(legalCase.getClients());
-        }
-
-        return Collections.unmodifiableSet(clients);
+        return this.cases.stream()
+                .flatMap(legalCase -> legalCase.getClients().stream())
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public List<Appointment> getClientAppointments(IEntity client) {
-        List<Appointment> appointments = new ArrayList<>();
-        for (LegalCase legalCase : this.cases) {
-            appointments.addAll(legalCase.getClientAppointments(client));
-        }
-
-        return Collections.unmodifiableList(appointments);
+        return this.cases.stream()
+                .flatMap(legalCase -> legalCase.getClientAppointments(client).stream())
+                .toList();
     }
 }

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class LegalCase {
     private IContract contract;
@@ -98,13 +97,13 @@ public class LegalCase {
     public List<Appointment> getFutureAppointments() {
         return this.appointments.stream()
                 .filter(Appointment::startsAfterNow)
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public List<Appointment> getClientAppointments(IEntity client) {
         return this.appointments.stream()
                 .filter(appointment -> appointment.getParticipants().contains(client))
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
     }
 
     public void addAppointment(Appointment appointment) {
