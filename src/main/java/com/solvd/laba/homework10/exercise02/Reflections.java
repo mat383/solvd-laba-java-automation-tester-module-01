@@ -13,14 +13,33 @@ public class Reflections {
 
         // create object and call method from reflection
         try {
+            System.out.println("\nCreating Person class using reflection");
+
             Class<?> cl = Class.forName("com.solvd.laba.homework02.exercise01.Person");
-            Object newInstance = cl.newInstance();
+            Class[] constructorParameters = {String.class, String.class, String.class};
+            Object newInstance = cl.getDeclaredConstructor(constructorParameters)
+                    .newInstance("12312", "John", "Smith");
+
+            System.out.println("Instance Created");
+
+            System.out.println("Invoking method using reflection");
+
+            Method method = cl.getMethod("getFullName");
+            String result = (String) method.invoke(newInstance);
+
+            System.out.println("Method invoked!");
+            System.out.println("result: " + result);
+
         } catch (ClassNotFoundException e) {
             System.out.println("Class not found. Details: " + e.toString());
         } catch (InstantiationException e) {
             System.out.println("Unable to instantiate the class. Details: " + e.toString());
         } catch (IllegalAccessException e) {
             System.out.println("Member or constructor not accessible. Details: " + e.toString());
+        } catch (NoSuchMethodException e) {
+            System.out.println("No such method. Details: " + e.toString());
+        } catch (InvocationTargetException e) {
+            System.out.println("Invocation Target Exception. Details: " + e.toString());
         }
     }
 
