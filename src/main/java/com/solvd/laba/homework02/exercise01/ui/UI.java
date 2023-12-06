@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class UI {
@@ -172,6 +173,25 @@ public class UI {
         System.out.println("** Creating clients");
         addClientsToCase(newCase);
 
+        System.out.println("** Adding appointment");
+        Address appointmentAddress = null;
+        while ( appointmentAddress == null ) {
+            try {
+                appointmentAddress = promptForAddress("provide address: ");
+            } catch (AddressDoesntExistException e) {
+                System.out.println("please provide valid address");
+            }
+        }
+        LocalDateTime start = LocalDateTime.now()
+                .plusWeeks(1)
+                .withHour(13);
+        LocalDateTime end = start.plusHours(1);
+        Appointment appointment = new Appointment(
+                Appointment.Type.CONSULTATION,
+                start, end, appointmentAddress,
+                "Initial consultation");
+        newCase.addAppointment(appointment);
+
         return newCase;
     }
 
@@ -258,6 +278,31 @@ public class UI {
         // TODO add more contract options
         BigDecimal flatPrice = promptForBigDecimal("Contract flat price: ");
         return new ContractFlatPrice(flatPrice);
+    }
+
+    protected Address promptForAddress(String prompt) throws AddressDoesntExistException {
+        System.out.println(prompt);
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Country: ");
+        String country = scanner.nextLine();
+
+        System.out.print("City: ");
+        String city = scanner.nextLine();
+
+        System.out.print("Postal Code: ");
+        String postalCode = scanner.nextLine();
+
+        System.out.print("Street: ");
+        String street = scanner.nextLine();
+
+        System.out.print("Street Number: ");
+        String streetNumber = scanner.nextLine();
+
+        System.out.print("Appartment Number: ");
+        String apartmentNumber = scanner.nextLine();
+
+        return new Address(country, city, postalCode, street, streetNumber, apartmentNumber);
     }
 
     protected String promptForString(String prompt) {
