@@ -1,15 +1,19 @@
 package com.solvd.laba.homework02.exercise01;
 
+import com.solvd.laba.homework02.exercise01.util.ArrayBasedLinkedList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LegalOffice {
 
     private static final Logger LOGGER = LogManager.getLogger(LegalOffice.class.getName());
-    private final ArrayList<LegalCase> cases = new ArrayList<>();
+    private final List<LegalCase> cases = new ArrayBasedLinkedList<>();
     // TODO add address book
 
 
