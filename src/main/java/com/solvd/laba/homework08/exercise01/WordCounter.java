@@ -54,7 +54,7 @@ public class WordCounter {
         return input.codePoints()
                 // convert code point to string to check if it's alphanumeric
                 .filter(codePoint -> StringUtils.isAlphanumeric(Character.toString(codePoint)))
-                // this collection method for code points is from stackoverflow
+                // this solution for collecting code points to string is from stackoverflow
                 // by user "shmosel" https://stackoverflow.com/questions/57318362/make-a-string-from-an-intstream-of-code-point-numbers
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
