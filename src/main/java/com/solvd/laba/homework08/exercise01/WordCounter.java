@@ -31,23 +31,32 @@ public class WordCounter {
      * count number of unique words in filename
      *
      * @param filename file for which to count number of unique words
-     * @return
+     * @return number of unique words in specified file
      * @throws IOException
      */
     static int countWords(String filename) throws IOException {
-        final String CHARS_TO_IGNORE = ",.-;:";
-
         // load files and separate into list of words
-        String text = FileUtils.readFileToString(new File(filename), "UTF-8");
-        List<String> words = List.of(StringUtils.split(text));
+        String fileText = FileUtils.readFileToString(new File(filename), "UTF-8");
+        List<String> words = List.of(StringUtils.split(fileText));
 
         // clean up words to avoid duplication
         // (remove irrelevant chars and convert to lowercase)
         Set<String> uniqueWords = words.stream()
-                .map(word -> StringUtils.lowerCase(
-                        StringUtils.strip(word, CHARS_TO_IGNORE),
-                        Locale.ENGLISH))
+                .map(word -> StringUtils.lowerCase(word, Locale.ENGLISH))
+                .map(WordCounter::removeNonAlphanumericChars)
+                .filter(StringUtils::isNotBlank)
                 .collect(Collectors.toUnmodifiableSet());
+
         return uniqueWords.size();
+    }
+
+    static String removeNonAlphanumericChars(String input) {
+        return input.codePoints()
+                // convert code point to string to check if it's alphanumeric
+                .filter(codePoint -> StringUtils.isAlphanumeric(Character.toString(codePoint)))
+                // this collection method for code points is from stackoverflow
+                // by user "shmosel" https://stackoverflow.com/questions/57318362/make-a-string-from-an-intstream-of-code-point-numbers
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
     }
 }
