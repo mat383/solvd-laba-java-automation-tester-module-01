@@ -18,6 +18,8 @@ public class Main {
                 return result;
             }));
         }
-        CompletableFuture.allOf((CompletableFuture<?>[]) tasks.toArray()).join();
+        
+        CompletableFuture[] tasksArray = tasks.toArray(new CompletableFuture[tasks.size()]);
+        CompletableFuture.allOf(tasksArray).join();
     }
 }
