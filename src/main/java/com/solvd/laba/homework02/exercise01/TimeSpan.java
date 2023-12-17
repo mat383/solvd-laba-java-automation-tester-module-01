@@ -11,7 +11,7 @@ public class TimeSpan {
     public TimeSpan(LocalDateTime start, LocalDateTime end) {
         if ((start != null && end != null)
                 && start.isAfter(end)) {
-            throw new TimeSpanHasNegativeDurationError("Start time have to be before end time");
+            throw new TimeSpanHasNegativeDurationException("Start time have to be before end time");
         }
         this.start = Optional.ofNullable(start);
         this.end = Optional.ofNullable(end);
@@ -25,7 +25,7 @@ public class TimeSpan {
     public void setStart(LocalDateTime start) {
         if ((start != null && this.end.isPresent())
                 && start.isAfter(this.end.get())) {
-            throw new TimeSpanHasNegativeDurationError("Start time have to be before end time");
+            throw new TimeSpanHasNegativeDurationException("Start time have to be before end time");
         }
         this.start = Optional.ofNullable(start);
     }
@@ -41,7 +41,7 @@ public class TimeSpan {
     public void setEnd(LocalDateTime end) {
         if ((this.start.isPresent() && end != null)
                 && this.start.get().isAfter(end)) {
-            throw new TimeSpanHasNegativeDurationError("Start time have to be before end time");
+            throw new TimeSpanHasNegativeDurationException("Start time have to be before end time");
         }
         this.end = Optional.ofNullable(end);
     }
