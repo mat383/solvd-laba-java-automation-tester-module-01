@@ -1,6 +1,9 @@
 package com.solvd.laba.homework02.exercise01.tui;
 
-import com.solvd.laba.homework02.exercise01.*;
+import com.solvd.laba.homework02.exercise01.Address;
+import com.solvd.laba.homework02.exercise01.AddressDoesntExistException;
+import com.solvd.laba.homework02.exercise01.LegalCase;
+import com.solvd.laba.homework02.exercise01.LegalOffice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,12 +12,36 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 public class Widgets {
 
     private static final Logger LOGGER = LogManager.getLogger(LegalOffice.class.getName());
 
+    public <T> void enumerateList(String heading, List<T> list, Function<T, String> printer) {
+        System.out.println(heading);
+        int index = 1;
+        for (T element : list) {
+            System.out.printf("%02d. %s\n",
+                    index,
+                    printer.apply(element));
+            ++index;
+        }
+    }
+
+    public <T> void enumerateArray(String heading, T[] array, Function<T, String> printer) {
+        if (!heading.isBlank()) {
+            System.out.println(heading);
+        }
+        int index = 1;
+        for (T element : array) {
+            System.out.printf("%02d. %s\n",
+                    index,
+                    printer.apply(element));
+            ++index;
+        }
+    }
 
     public void listCases(List<LegalCase> cases) {
         System.out.println("Cases:");
@@ -25,29 +52,15 @@ public class Widgets {
         }
     }
 
-    public void enumerateCases(List<LegalCase> cases) {
-        System.out.println("Cases:");
-        int index = 1;
-        for (LegalCase legalCase : cases) {
-            System.out.printf("%02d. (%s) %s\n",
-                    index,
-                    legalCase.isOpened() ? "open" : "closed",
-                    legalCase.getDescription());
-            ++index;
+    public <T> void listList(String heading, List<T> list, Function<T, String> printer) {
+        if (!heading.isBlank()) {
+            System.out.println(heading);
+        }
+        for (T element : list) {
+            System.out.printf("- %s\n", printer.apply(element));
         }
     }
 
-    public void listAppointments(List<Appointment> appointments) {
-        for (Appointment appointment : appointments) {
-            System.out.printf("- %s\n", appointment);
-        }
-    }
-
-    public void enumerateAppointments(List<Appointment> appointments) {
-        for (int i = 1; i <= appointments.size(); i++) {
-            System.out.printf("%02d. %s\n", i, appointments.get(i - 1));
-        }
-    }
 
     public Address promptForAddress(String prompt) throws AddressDoesntExistException {
         System.out.println(prompt);
@@ -128,6 +141,14 @@ public class Widgets {
                 new IntegerInRangeValidator(1, list.size()),
                 i -> i - 1);
         return list.get(selectedIndex);
+    }
+
+    public <T> T selectFromArray(String prompt, T[] array) {
+        int selectedIndex = selectNumericOptionWithModification(
+                prompt,
+                new IntegerInRangeValidator(1, array.length),
+                i -> i - 1);
+        return array[selectedIndex];
     }
 
     /**

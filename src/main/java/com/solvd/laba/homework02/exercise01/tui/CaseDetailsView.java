@@ -80,7 +80,7 @@ public class CaseDetailsView implements View {
             return;
         }
         System.out.println("Select appointment from which to create service:");
-        this.widgets.enumerateAppointments(this.legalCase.getAppointments());
+        this.widgets.enumerateList("", this.legalCase.getAppointments(), Appointment::toString);
         Appointment appointmentToUse = this.widgets.selectFromList("Select appointment: ", this.legalCase.getAppointments());
         this.legalCase.addService(appointmentToUse.createService());
     }
@@ -97,7 +97,7 @@ public class CaseDetailsView implements View {
         System.out.println();
 
         System.out.println("** Appointments");
-        this.widgets.listAppointments(this.legalCase.getAppointments());
+        this.widgets.listList("", this.legalCase.getAppointments(), Appointment::toString);
         System.out.println();
 
         System.out.println("** Services provided");

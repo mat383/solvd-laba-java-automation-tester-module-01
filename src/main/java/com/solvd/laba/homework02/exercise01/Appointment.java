@@ -7,21 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class Appointment {
-    public enum Type {
-        COURT_HEARING(LegalService.Type.COURT_HEARING),
-        CONSULTATION(LegalService.Type.CONSULTATION);
-
-        private final LegalService.Type relatedServiceType;
-
-        Type(LegalService.Type relatedServiceType) {
-            this.relatedServiceType = relatedServiceType;
-        }
-
-        public LegalService.Type getRelatedServiceType() {
-            return this.relatedServiceType;
-        }
-    }
-
     private Appointment.Type type;
     private TimeSpan timeSpan;
     private Address location;
@@ -171,5 +156,21 @@ public class Appointment {
         TimeSpan serviceTimeSpan = new TimeSpan(getStart(), getEnd());
         String description = this.details;
         return new LegalService(serviceType, serviceTimeSpan, description);
+    }
+
+
+    public enum Type {
+        COURT_HEARING(LegalService.Type.COURT_HEARING),
+        CONSULTATION(LegalService.Type.CONSULTATION);
+
+        private final LegalService.Type relatedServiceType;
+
+        Type(LegalService.Type relatedServiceType) {
+            this.relatedServiceType = relatedServiceType;
+        }
+
+        public LegalService.Type getRelatedServiceType() {
+            return this.relatedServiceType;
+        }
     }
 }

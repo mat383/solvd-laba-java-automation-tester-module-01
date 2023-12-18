@@ -149,10 +149,16 @@ public class LegalOfficeGenerator {
     }
 
     public static Person generatePerson() {
-        final String[] FIRST_NAME = {"John", "Martha", "Jack", "Elisabeth", "Elijah", "Sophia"};
+        final String[] FIRST_NAME_MALE = {"John", "Jack", "Elijah"};
+        final String[] FIRST_NAME_FEMALE = {"Martha", "Elisabeth", "Sophia"};
         final String[] LAST_NAME = {"London", "Smith", "Lee", "Gonzales", "Keller"};
         String id = Long.toString(RANDOM_GENERATOR.nextLong(1_000_000_000_000_000_000L, 2_000_000_000_000_000_000L));
-        return new Person(id, randomElement(FIRST_NAME), randomElement(LAST_NAME));
+        Person.Sex sex = randomElement(Person.Sex.values());
+        String firstName = switch (sex) {
+            case MALE -> randomElement(FIRST_NAME_MALE);
+            case FEMALE -> randomElement(FIRST_NAME_FEMALE);
+        };
+        return new Person(id, sex, firstName, randomElement(LAST_NAME));
     }
 
 

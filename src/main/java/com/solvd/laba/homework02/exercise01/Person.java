@@ -5,13 +5,18 @@ import java.util.Objects;
 public class Person implements IEntity {
 
     private final String id;
+
+    private Sex sex;
     private String firstName;
     private String lastName;
 
     // TODO add other constructors
-    public Person(String id, String firstName, String lastName) {
+    public Person(String id, Sex sex, String firstName, String lastName) {
         super();
         // TODO add checking for empty name string
+        if (sex == null) {
+            throw new IllegalArgumentException("sex cannot be null");
+        }
         if (firstName == null) {
             throw new IllegalArgumentException("firstName cannot be null");
         }
@@ -28,6 +33,7 @@ public class Person implements IEntity {
             throw new IllegalArgumentException("id cannot be empty");
         }
         this.id = id;
+        this.sex = sex;
         this.firstName = firstName;
         this.lastName = lastName;
     }
@@ -66,6 +72,14 @@ public class Person implements IEntity {
         return id;
     }
 
+    public Sex getSex() {
+        return sex;
+    }
+
+    public void setSex(Sex sex) {
+        this.sex = sex;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -96,8 +110,23 @@ public class Person implements IEntity {
 
     @Override
     public String getFullName() {
-        return this.firstName + " " + this.lastName;
+        return this.sex.getAbbreviation() + " " + this.firstName + " " + this.lastName;
     }
 
 
+    public enum Sex {
+        MALE("Mr."),
+        FEMALE("Ms.");
+
+        private final String abbreviation;
+
+        Sex(String abbreviation) {
+            this.abbreviation = abbreviation;
+        }
+
+        public String getAbbreviation() {
+            return this.abbreviation;
+        }
+
+    }
 }

@@ -3,17 +3,6 @@ package com.solvd.laba.homework02.exercise01;
 import java.time.LocalDateTime;
 
 public class LegalService {
-    public enum Type {
-        CONSULTATION,
-        COURT_HEARING,
-        RESEARCH,
-        /**
-         * legal advice without meeting
-         * i.e. responding to email question
-         */
-        LEGAL_ADVICE
-    }
-
     public static final double STANDARD_COMPLEXITY = 1.;
     public static final double UNMODIFIED_PRICE = 1.;
 
@@ -127,6 +116,18 @@ public class LegalService {
 
     public void setPriceModifier(double priceModifier) {
         this.priceModifier = priceModifier;
+    }
+
+    
+    public enum Type {
+        CONSULTATION,
+        COURT_HEARING,
+        RESEARCH,
+        /**
+         * legal advice without meeting
+         * i.e. responding to email question
+         */
+        LEGAL_ADVICE
     }
 }
 

@@ -49,7 +49,13 @@ public class CasesView implements View {
 
         while (action != Actions.QUIT) {
             System.out.println();
-            this.widgets.enumerateCases(relevantCases);
+            this.widgets.enumerateList(
+                    "Cases:",
+                    relevantCases,
+                    c -> "(%s) %s".formatted(
+                            c.isOpened() ? "open" : "closed",
+                            c.getDescription()));
+
             action = Actions.valueOf(
                     this.widgets.selectCharOptionWithDescription(Actions.actionsMap()));
 
@@ -159,11 +165,12 @@ public class CasesView implements View {
 
     private void actionUpcomingAppointments(List<LegalCase> relevantCases) {
         LOGGER.info("action: upcoming appointments");
-        System.out.println("Upcoming appointments:");
-        relevantCases.stream()
+        List<Appointment> upcomingAppointments = relevantCases.stream()
                 .flatMap(legalCase -> legalCase.getFutureAppointments().stream())
                 .sorted(Comparator.comparing(Appointment::getStart))
-                .forEachOrdered(appointment -> System.out.println("- " + appointment.toString()));
+                .toList();
+
+        this.widgets.listList("Upcoming appointments", upcomingAppointments, Appointment::toString);
     }
 
 
@@ -241,9 +248,11 @@ public class CasesView implements View {
     protected IEntity createClient() {
         // TODO add option to create Person or Company
         String id = this.widgets.promptForString("Id: ");
+        this.widgets.enumerateArray("Select sex:", Person.Sex.values(), Person.Sex::toString);
+        Person.Sex sex = this.widgets.selectFromArray("Number: ", Person.Sex.values());
         String firstName = this.widgets.promptForString("First name: ");
         String lastName = this.widgets.promptForString("Last name: ");
-        return new Person(id, firstName, lastName);
+        return new Person(id, sex, firstName, lastName);
     }
 
     protected ContractWithDescription createContract() {
