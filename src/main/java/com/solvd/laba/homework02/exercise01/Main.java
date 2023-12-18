@@ -1,6 +1,8 @@
 package com.solvd.laba.homework02.exercise01;
 
-import com.solvd.laba.homework02.exercise01.ui.UI;
+import com.solvd.laba.homework02.exercise01.tui.CasesView;
+import com.solvd.laba.homework02.exercise01.tui.View;
+import com.solvd.laba.homework02.exercise01.tui.Widgets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +25,7 @@ public class Main {
         IEntity clientA = LegalOfficeGenerator.generatePerson();
         IEntity clientB = LegalOfficeGenerator.generatePerson();
         IEntity clientC = LegalOfficeGenerator.generateCompany();
-        IEntity clientD = new Company("Some New Company");
+        IEntity clientD = new Company("Some New Company", Company.Type.GENERAL_PARTNERSHIP, "SNC-001");
         ArrayList<IEntity> caseClients = new ArrayList<>();
         caseClients.add(clientA);
         caseClients.add(clientB);
@@ -100,10 +102,11 @@ public class Main {
 
         // TODO add UI for selecting UI type / use args
         //UI ui = new ClientUI(office, clientB);
-        UI ui = new UI(office);
+        //UI ui = new UI(office);
         //UI ui = new UI(LegalOfficeGenerator.generateLegalOffice());
         //UI ui = new FilteredUI(office, new LegalCasesClientFilter(clientA));
-        ui.show();
+        View mainView = new CasesView(office, new Widgets());
+        mainView.show();
     }
 
 

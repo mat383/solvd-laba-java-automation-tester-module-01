@@ -142,7 +142,10 @@ public class LegalOfficeGenerator {
         final String[] COMPANY_FIRST_PART = {"New", "Green", "Fast", "Traditional"};
         final String[] COMPANY_SECOND_PART = {"Industries", "Corporation", "Company"};
         String name = randomElement(COMPANY_FIRST_PART) + " " + randomElement(COMPANY_SECOND_PART);
-        return new Company(name);
+        int companyTypeNumber = RANDOM_GENERATOR.nextInt(Company.Type.values().length);
+        Company.Type companyType = Company.Type.values()[companyTypeNumber];
+        String id = Integer.toString(RANDOM_GENERATOR.nextInt(1_000, 10_000));
+        return new Company(name, companyType, id);
     }
 
     public static Person generatePerson() {
