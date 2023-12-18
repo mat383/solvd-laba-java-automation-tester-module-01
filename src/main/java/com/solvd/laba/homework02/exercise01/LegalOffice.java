@@ -4,10 +4,8 @@ import com.solvd.laba.homework02.exercise01.util.ArrayBasedLinkedList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class LegalOffice {
@@ -68,5 +66,17 @@ public class LegalOffice {
         return this.cases.stream()
                 .flatMap(legalCase -> legalCase.getClientAppointments(client).stream())
                 .toList();
+    }
+
+    /**
+     * returns first client entity that fulfils specified criteria
+     *
+     * @param predicate criterion for selecting a client
+     * @return
+     */
+    public Optional<IEntity> findClient(Predicate<IEntity> predicate) {
+        return getClients().stream()
+                .filter(predicate)
+                .findFirst();
     }
 }

@@ -17,7 +17,7 @@ public class CasesView implements View {
     private final ILegalCasesFilter casesFilter;
     private final Widgets widgets;
 
-    public CasesView(LegalOffice legalOffice, ILegalCasesFilter casesFilter, Widgets widgets) {
+    public CasesView(LegalOffice legalOffice, Widgets widgets, ILegalCasesFilter casesFilter) {
         this.legalOffice = legalOffice;
         this.casesFilter = casesFilter;
         this.widgets = widgets;
@@ -34,7 +34,7 @@ public class CasesView implements View {
     }
 
     public CasesView(LegalOffice legalOffice, Widgets widgets) {
-        this(legalOffice, new LegalCasesNoFilter(), widgets);
+        this(legalOffice, widgets, new LegalCasesNoFilter());
     }
 
     @Override
@@ -146,7 +146,7 @@ public class CasesView implements View {
         LegalCase selectedCase = relevantCases.get(caseIndex);
 
         CaseDetailsView caseDetailsView = new CaseDetailsView(this.legalOffice, selectedCase,
-                this.casesFilter, this.widgets);
+                this.widgets, this.casesFilter);
         caseDetailsView.show();
     }
 
@@ -165,12 +165,9 @@ public class CasesView implements View {
 
     private void actionUpcomingAppointments(List<LegalCase> relevantCases) {
         LOGGER.info("action: upcoming appointments");
-        List<Appointment> upcomingAppointments = relevantCases.stream()
-                .flatMap(legalCase -> legalCase.getFutureAppointments().stream())
-                .sorted(Comparator.comparing(Appointment::getStart))
-                .toList();
-
-        this.widgets.listList("Upcoming appointments", upcomingAppointments, Appointment::toString);
+        UpcomingAppointmentsView upcomingAppointmentsView = new UpcomingAppointmentsView(
+                this.legalOffice, this.widgets, this.casesFilter);
+        upcomingAppointmentsView.show();
     }
 
 

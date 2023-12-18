@@ -1,14 +1,14 @@
 package com.solvd.laba.homework02.exercise01;
 
-import com.solvd.laba.homework02.exercise01.tui.CasesView;
-import com.solvd.laba.homework02.exercise01.tui.View;
-import com.solvd.laba.homework02.exercise01.tui.Widgets;
+import com.solvd.laba.homework02.exercise01.tui.*;
+import com.solvd.laba.homework02.exercise01.util.ArgumentsParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public class Main {
 
@@ -22,7 +22,7 @@ public class Main {
         LOGGER.info("Main started");
         LegalOffice office = new LegalOffice();
 
-        IEntity clientA = LegalOfficeGenerator.generatePerson();
+        IEntity clientA = new Person("0001", Person.Sex.MALE, "John", "Smith");
         IEntity clientB = LegalOfficeGenerator.generatePerson();
         IEntity clientC = LegalOfficeGenerator.generateCompany();
         IEntity clientD = new Company("Some New Company", Company.Type.GENERAL_PARTNERSHIP, "SNC-001");
@@ -100,13 +100,54 @@ public class Main {
         office.addCase(LegalOfficeGenerator.generateCase());
         office.addCase(LegalOfficeGenerator.generateCase());
 
-        // TODO add UI for selecting UI type / use args
-        //UI ui = new ClientUI(office, clientB);
-        //UI ui = new UI(office);
-        //UI ui = new UI(LegalOfficeGenerator.generateLegalOffice());
-        //UI ui = new FilteredUI(office, new LegalCasesClientFilter(clientA));
-        View mainView = new CasesView(office, new Widgets());
+
+        // parse arguments
+        ArgumentsParser argumentsParser = new ArgumentsParser(args);
+        ILegalCasesFilter casesFilter = new LegalCasesNoFilter();
+        View mainView = null;
+
+        if (argumentsParser.flagPresent(ArgumentsParser.Flags.HELP)) {
+            printHelp();
+            return;
+        }
+        if (argumentsParser.flagPresent(ArgumentsParser.Flags.PERSON)) {
+            String personId = argumentsParser.getFlagValue(ArgumentsParser.Flags.PERSON);
+            IEntity person = office.findClient(iEntity -> iEntity instanceof Person p
+                    ? p.getId().equals(personId)
+                    : false).orElseThrow(() -> new NoSuchElementException("Person with specified id not found"));
+            casesFilter = new LegalCasesClientFilter(person);
+        }
+
+        if (argumentsParser.flagPresent(ArgumentsParser.Flags.UPCOMING_APPOINTMENTS)) {
+            // show upcoming appointments
+            mainView = new UpcomingAppointmentsView(office, new Widgets(), casesFilter);
+        } else {
+            // run in interactive mode
+            mainView = new CasesView(office, new Widgets(), casesFilter);
+        }
+
         mainView.show();
+    }
+
+    public static void printHelp() {
+        String helpString = """
+                usage: class [OPTIONS]
+                                
+                options:
+                  -%s, --%s
+                      print this help
+                  -%s, --%s <PERSON-ID>
+                      filter UI to show only cases related to specified user
+                  -%s, --%s
+                      show upcoming appointments and quit"""
+                .formatted(
+                        ArgumentsParser.Flags.HELP.getShortName(),
+                        ArgumentsParser.Flags.HELP.getLongName(),
+                        ArgumentsParser.Flags.PERSON.getShortName(),
+                        ArgumentsParser.Flags.PERSON.getLongName(),
+                        ArgumentsParser.Flags.UPCOMING_APPOINTMENTS.getShortName(),
+                        ArgumentsParser.Flags.UPCOMING_APPOINTMENTS.getLongName());
+        System.out.println(helpString);
     }
 
 

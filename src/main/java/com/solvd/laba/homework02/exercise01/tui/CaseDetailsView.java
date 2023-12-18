@@ -17,7 +17,7 @@ public class CaseDetailsView implements View {
     private final ILegalCasesFilter casesFilter;
     private final Widgets widgets;
 
-    public CaseDetailsView(LegalOffice legalOffice, LegalCase legalCase, ILegalCasesFilter casesFilter, Widgets widgets) {
+    public CaseDetailsView(LegalOffice legalOffice, LegalCase legalCase, Widgets widgets, ILegalCasesFilter casesFilter) {
         this.legalOffice = legalOffice;
         this.legalCase = legalCase;
         this.casesFilter = casesFilter;
@@ -38,7 +38,7 @@ public class CaseDetailsView implements View {
     }
 
     public CaseDetailsView(LegalOffice legalOffice, LegalCase legalCase, Widgets widgets) {
-        this(legalOffice, legalCase, new LegalCasesNoFilter(), widgets);
+        this(legalOffice, legalCase, widgets, new LegalCasesNoFilter());
     }
 
     @Override
