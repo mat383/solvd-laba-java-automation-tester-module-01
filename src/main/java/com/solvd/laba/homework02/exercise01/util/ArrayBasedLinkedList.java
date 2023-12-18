@@ -648,49 +648,6 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
     public class ArrayBasedLinkedListIterator implements ListIterator<E> {
         /**
-         * describes state of iterator with regard to set and remove operations
-         */
-        public enum State {
-            CANNOT_SET_OR_REMOVE {
-                @Override
-                public int getRelevantPointerForSetRemove(int nextElementPointer, int lastElementPointer, int[] nodesPrevPointer) {
-                    throw new UnsupportedOperationException(this.toString() + " cannot do this operation");
-                }
-            },
-            AFTER_NEXT {
-                @Override
-                public int getRelevantPointerForSetRemove(int nextElementPointer, int lastElementPointer, int[] nodesPrevPointer) {
-                    if (nextElementPointer == EMPTY_NODE) {
-                        return lastElementPointer;
-                    } else {
-                        return nodesPrevPointer[nextElementPointer];
-                    }
-                }
-            },
-            AFTER_PREV {
-                @Override
-                public int getRelevantPointerForSetRemove(int nextElementPointer, int lastElementPointer, int[] nodesPrevPointer) {
-                    return nextElementPointer;
-                }
-            };
-
-            /**
-             * computes relevant internal pointer for set and remove operations
-             * from current cursor position
-             *
-             * @param nextElementPointer
-             * @param lastElementPointer
-             * @param nodesPrevPointer
-             * @return
-             */
-            public abstract int getRelevantPointerForSetRemove(
-                    int nextElementPointer,
-                    int lastElementPointer,
-                    int[] nodesPrevPointer);
-        }
-
-        // TODO rename them to element after cursor pointer or sth
-        /**
          * internal position of next element, can be EMPTY_NODE if list is empty
          */
         private int nextElementPointer;
@@ -876,6 +833,62 @@ public class ArrayBasedLinkedList<E> implements List<E> {
                     ArrayBasedLinkedList.this.nodesPrevPointer);
 
             ArrayBasedLinkedList.this.nodes[nodeToSet] = e;
+        }
+
+
+        /**
+         * describes state of iterator with regard to set and remove operations
+         */
+        public enum State {
+            CANNOT_SET_OR_REMOVE(
+                    (nextElementPointer, lastElementPointer, nodesPrevPointer) -> {
+                        throw new UnsupportedOperationException("cannot do this operation in this state");
+                    }),
+            AFTER_NEXT(
+                    (nextElementPointer, lastElementPointer, nodesPrevPointer) -> {
+                        if (nextElementPointer == EMPTY_NODE) {
+                            return lastElementPointer;
+                        } else {
+                            return nodesPrevPointer[nextElementPointer];
+                        }
+                    }),
+            AFTER_PREV(
+                    (nextElementPointer, lastElementPointer, nodesPrevPointer) -> {
+                        return nextElementPointer;
+                    });
+
+            private final ConvertFunction relevantPointerForSetRemoveFunction;
+
+            private State(ConvertFunction relevantPointerForSetRemoveFunction) {
+                this.relevantPointerForSetRemoveFunction = relevantPointerForSetRemoveFunction;
+            }
+
+            /**
+             * computes relevant internal pointer for set and remove operations
+             * from current cursor position
+             *
+             * @param nextElementPointer
+             * @param lastElementPointer
+             * @param nodesPrevPointer
+             * @return
+             */
+            public int getRelevantPointerForSetRemove(
+                    int nextElementPointer,
+                    int lastElementPointer,
+                    int[] nodesPrevPointer) {
+                return this.relevantPointerForSetRemoveFunction.convert(
+                        nextElementPointer,
+                        lastElementPointer,
+                        nodesPrevPointer);
+            }
+
+            @FunctionalInterface
+            private static interface ConvertFunction {
+                int convert(
+                        int nextElementPointer,
+                        int lastElementPointer,
+                        int[] nodesPrevPointer);
+            }
         }
     }
 
