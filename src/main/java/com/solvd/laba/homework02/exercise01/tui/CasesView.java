@@ -47,36 +47,36 @@ public class CasesView implements View {
         List<LegalCase> relevantCases = getCasesForCasesView();
         Actions action = null;
 
-        while (action != Actions.ACTION_QUIT) {
+        while (action != Actions.QUIT) {
             System.out.println();
             this.widgets.enumerateCases(relevantCases);
-            action = Actions.of(
+            action = Actions.valueOf(
                     this.widgets.selectCharOptionWithDescription(Actions.actionsMap()));
 
             LOGGER.debug("Selected option " + action + " in cases view");
 
             switch (action) {
-                case ACTION_QUIT:
+                case QUIT:
                     LOGGER.info("quitting CasesView");
                     System.out.println("quitting");
                     break;
 
-                case ACTION_DETAILS:
+                case SHOW_DETAILS:
                     actionDetails(relevantCases);
                     relevantCases = getCasesForCasesView();
                     break;
 
-                case ACTION_ADD_CASE:
+                case ADD_CASE:
                     actionAddCase();
                     relevantCases = getCasesForCasesView();
                     break;
 
-                case ACTION_REMOVE_CASE:
+                case REMOVE_CASE:
                     actionRemoveCase(relevantCases);
                     relevantCases = getCasesForCasesView();
                     break;
 
-                case ACTION_UPCOMING_APPOINTMENTS:
+                case SHOW_UPCOMING_APPOINTMENTS:
                     actionUpcomingAppointments(relevantCases);
                     relevantCases = getCasesForCasesView();
                     break;
@@ -133,9 +133,11 @@ public class CasesView implements View {
         }
 
         System.out.println("Showing case details");
-        int caseNumber = this.widgets.selectNumericOption(
-                "Case number: ", new IntegerInRangeValidator(1, relevantCases.size()));
-        LegalCase selectedCase = relevantCases.get(caseNumber - 1);
+        int caseIndex = this.widgets.selectNumericOptionWithModification(
+                "Case number: ",
+                new IntegerInRangeValidator(1, relevantCases.size()),
+                i -> i - 1);
+        LegalCase selectedCase = relevantCases.get(caseIndex);
 
         CaseDetailsView caseDetailsView = new CaseDetailsView(this.legalOffice, selectedCase,
                 this.casesFilter, this.widgets);
@@ -256,11 +258,11 @@ public class CasesView implements View {
 
 
     private enum Actions {
-        ACTION_QUIT("quit", 'q'),
-        ACTION_DETAILS("how case details", 'd'),
-        ACTION_ADD_CASE("add case", 'a'),
-        ACTION_REMOVE_CASE("remove case", 'r'),
-        ACTION_UPCOMING_APPOINTMENTS("show upcoming appointments", 'u');
+        QUIT("quit", 'q'),
+        SHOW_DETAILS("how case details", 'd'),
+        ADD_CASE("add case", 'a'),
+        REMOVE_CASE("remove case", 'r'),
+        SHOW_UPCOMING_APPOINTMENTS("show upcoming appointments", 'u');
 
         private final String readableName;
         private final char selectionKey;
@@ -270,7 +272,7 @@ public class CasesView implements View {
             this.selectionKey = selectionKey;
         }
 
-        public static Actions of(char selectionKey) {
+        public static Actions valueOf(char selectionKey) {
             return Arrays.stream(Actions.values())
                     .filter(a -> a.selectionKey == selectionKey)
                     .findFirst()

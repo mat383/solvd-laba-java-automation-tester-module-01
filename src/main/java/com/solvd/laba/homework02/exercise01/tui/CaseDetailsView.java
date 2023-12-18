@@ -1,11 +1,13 @@
 package com.solvd.laba.homework02.exercise01.tui;
 
-import com.solvd.laba.homework02.exercise01.IEntity;
-import com.solvd.laba.homework02.exercise01.LegalCase;
-import com.solvd.laba.homework02.exercise01.LegalOffice;
-import com.solvd.laba.homework02.exercise01.LegalService;
+import com.solvd.laba.homework02.exercise01.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 public class CaseDetailsView implements View {
 
@@ -43,22 +45,63 @@ public class CaseDetailsView implements View {
     public void show() {
         LOGGER.info("Showing CaseDetailsView for %s".formatted(legalCase));
 
+        Actions action = null;
+
+        while (action != Actions.QUIT) {
+            System.out.println();
+            printDetails();
+
+            action = Actions.valueOf(
+                    this.widgets.selectCharOptionWithDescription(Actions.actionsMap()));
+
+            LOGGER.debug("Selected option " + action + " in cases view");
+
+            switch (action) {
+                case QUIT:
+                    LOGGER.info("quitting CasesView");
+                    System.out.println("quitting");
+                    break;
+
+                case SERVICE_FROM_APPOINTMENT:
+                    actionServiceFromAppointment();
+                    break;
+
+                default:
+                    System.out.printf("Choice doesn't match any action: '%s'\n", action);
+
+            }
+        }
+    }
+
+    private void actionServiceFromAppointment() {
+        LOGGER.info("action: create service from appointment");
+        if (this.legalCase.getAppointments().isEmpty()) {
+            System.out.println("No appointments to convert");
+            return;
+        }
+        System.out.println("Select appointment from which to create service:");
+        this.widgets.enumerateAppointments(this.legalCase.getAppointments());
+        Appointment appointmentToUse = this.widgets.selectFromList("Select appointment: ", this.legalCase.getAppointments());
+        this.legalCase.addService(appointmentToUse.createService());
+    }
+
+    private void printDetails() {
         System.out.println("\n* Case details");
-        System.out.println(legalCase.getDescription());
+        System.out.println(this.legalCase.getDescription());
         System.out.println();
 
         System.out.println("** Clients");
-        for (IEntity client : legalCase.getClients()) {
+        for (IEntity client : this.legalCase.getClients()) {
             System.out.println("- " + client);
         }
         System.out.println();
 
         System.out.println("** Appointments");
-        this.widgets.listAppointments(legalCase.getAppointments());
+        this.widgets.listAppointments(this.legalCase.getAppointments());
         System.out.println();
 
         System.out.println("** Services provided");
-        for (LegalService service : legalCase.getServices()) {
+        for (LegalService service : this.legalCase.getServices()) {
             System.out.println("- " + service);
         }
         System.out.println();
@@ -67,4 +110,28 @@ public class CaseDetailsView implements View {
         System.out.println();
     }
 
+    private enum Actions {
+        QUIT("quit", 'q'),
+        SERVICE_FROM_APPOINTMENT("create service from appointment", 's');
+
+        private final String readableName;
+        private final char selectionKey;
+
+        Actions(String readableName, char selectionKey) {
+            this.readableName = readableName;
+            this.selectionKey = selectionKey;
+        }
+
+        public static Actions valueOf(char selectionKey) {
+            return Arrays.stream(Actions.values())
+                    .filter(a -> a.selectionKey == selectionKey)
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchElementException("No action with key '%c'".formatted(selectionKey)));
+        }
+
+        public static Map<Character, String> actionsMap() {
+            return Arrays.stream(Actions.values())
+                    .collect(Collectors.toMap(a -> a.selectionKey, a -> a.readableName));
+        }
+    }
 }

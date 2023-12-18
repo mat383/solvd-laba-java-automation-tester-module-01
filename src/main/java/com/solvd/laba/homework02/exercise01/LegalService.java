@@ -1,5 +1,7 @@
 package com.solvd.laba.homework02.exercise01;
 
+import java.time.LocalDateTime;
+
 public class LegalService {
     public enum Type {
         CONSULTATION,
@@ -54,13 +56,18 @@ public class LegalService {
         this.priceModifier = priceModifier;
     }
 
+    public LegalService(LegalService.Type type, TimeSpan timeSpan, String description) {
+        this(type, timeSpan, description, "", STANDARD_COMPLEXITY, UNMODIFIED_PRICE);
+    }
+
     public LegalService(LegalService.Type type, TimeSpan timeSpan) {
         this(type, timeSpan, "", "", STANDARD_COMPLEXITY, UNMODIFIED_PRICE);
     }
 
     @Override
     public String toString() {
-        return "(" + this.timeSpan.getStart() + " - " + this.getTimeSpan().getEnd() + ")"
+        return "(" + this.timeSpan.getStart().map(LocalDateTime::toString).orElse("")
+                + " - " + this.timeSpan.getEnd().map(LocalDateTime::toString).orElse("") + ")"
                 + " " + this.type
                 + " " + this.description
                 + ((this.annotation != null && !this.annotation.isEmpty()) ? " (" + this.annotation + ")" : "")

@@ -84,7 +84,7 @@ public class Main {
                 "Legal Street", "1a", "2b", true);
         LocalDateTime courtStart = LocalDateTime.of(2023, 11, 10, 12, 0, 0);
         LocalDateTime courtEnd = LocalDateTime.of(2023, 11, 10, 15, 0, 0);
-        Appointment courtHearing = new Appointment(Appointment.Type.COURT,
+        Appointment courtHearing = new Appointment(Appointment.Type.COURT_HEARING,
                 courtStart, courtEnd, courtAddress, "First Hearing", caseClients);
         caseA.addAppointment(courtHearing);
 

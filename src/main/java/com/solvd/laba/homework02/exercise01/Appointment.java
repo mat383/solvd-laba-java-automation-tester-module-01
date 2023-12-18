@@ -8,8 +8,18 @@ import java.util.List;
 
 public class Appointment {
     public enum Type {
-        COURT,
-        CONSULTATION
+        COURT_HEARING(LegalService.Type.COURT_HEARING),
+        CONSULTATION(LegalService.Type.CONSULTATION);
+
+        private final LegalService.Type relatedServiceType;
+
+        Type(LegalService.Type relatedServiceType) {
+            this.relatedServiceType = relatedServiceType;
+        }
+
+        public LegalService.Type getRelatedServiceType() {
+            return this.relatedServiceType;
+        }
     }
 
     private Appointment.Type type;
@@ -149,5 +159,17 @@ public class Appointment {
     // used in constructor
     public final boolean haveParticipant(IEntity participant) {
         return this.participants.contains(participant);
+    }
+
+    /**
+     * Creates LegalService from this appointment
+     *
+     * @return
+     */
+    public LegalService createService() {
+        LegalService.Type serviceType = this.type.getRelatedServiceType();
+        TimeSpan serviceTimeSpan = new TimeSpan(getStart(), getEnd());
+        String description = this.details;
+        return new LegalService(serviceType, serviceTimeSpan, description);
     }
 }

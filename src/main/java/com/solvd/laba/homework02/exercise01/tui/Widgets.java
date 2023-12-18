@@ -9,13 +9,14 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.UnaryOperator;
 
 public class Widgets {
 
     private static final Logger LOGGER = LogManager.getLogger(LegalOffice.class.getName());
 
 
-    protected void listCases(List<LegalCase> cases) {
+    public void listCases(List<LegalCase> cases) {
         System.out.println("Cases:");
         for (LegalCase legalCase : cases) {
             System.out.printf("- (%s) %s\n",
@@ -24,7 +25,7 @@ public class Widgets {
         }
     }
 
-    protected void enumerateCases(List<LegalCase> cases) {
+    public void enumerateCases(List<LegalCase> cases) {
         System.out.println("Cases:");
         int index = 1;
         for (LegalCase legalCase : cases) {
@@ -36,13 +37,19 @@ public class Widgets {
         }
     }
 
-    protected void listAppointments(List<Appointment> appointments) {
+    public void listAppointments(List<Appointment> appointments) {
         for (Appointment appointment : appointments) {
             System.out.printf("- %s\n", appointment);
         }
     }
 
-    protected Address promptForAddress(String prompt) throws AddressDoesntExistException {
+    public void enumerateAppointments(List<Appointment> appointments) {
+        for (int i = 1; i <= appointments.size(); i++) {
+            System.out.printf("%02d. %s\n", i, appointments.get(i - 1));
+        }
+    }
+
+    public Address promptForAddress(String prompt) throws AddressDoesntExistException {
         System.out.println(prompt);
         Scanner scanner = new Scanner(System.in);
 
@@ -67,19 +74,19 @@ public class Widgets {
         return new Address(country, city, postalCode, street, streetNumber, apartmentNumber);
     }
 
-    protected String promptForString(String prompt) {
+    public String promptForString(String prompt) {
         Scanner scanner = new Scanner(System.in);
         System.out.print(prompt);
         return scanner.nextLine();
     }
 
-    protected char promptForChar(String prompt) {
+    public char promptForChar(String prompt) {
         Scanner scanner = new Scanner(System.in);
         System.out.print(prompt);
         return scanner.next().charAt(0);
     }
 
-    protected BigDecimal promptForBigDecimal(String prompt) {
+    public BigDecimal promptForBigDecimal(String prompt) {
         Scanner scanner = new Scanner(System.in);
         BigDecimal input = null;
         while (input == null) {
@@ -93,7 +100,7 @@ public class Widgets {
         return input;
     }
 
-    protected int selectNumericOption(String prompt, IValidator<Integer> validator) {
+    public int selectNumericOption(String prompt, IValidator<Integer> validator) {
         Integer selection = null;
         while (selection == null || !validator.isValid(selection)) {
             try {
@@ -110,13 +117,26 @@ public class Widgets {
         return selection;
     }
 
+    public int selectNumericOptionWithModification(String prompt, IValidator<Integer> validator, UnaryOperator<Integer> modifier) {
+        return modifier.apply(selectNumericOption(prompt, validator));
+
+    }
+
+    public <T> T selectFromList(String prompt, List<T> list) {
+        int selectedIndex = selectNumericOptionWithModification(
+                prompt,
+                new IntegerInRangeValidator(1, list.size()),
+                i -> i - 1);
+        return list.get(selectedIndex);
+    }
+
     /**
      * returns selected option as char
      *
      * @param options map of options (Character) with descriptions (String)
      * @return Character corresponding to selected options
      */
-    protected char selectCharOptionWithDescription(Map<Character, String> options) {
+    public char selectCharOptionWithDescription(Map<Character, String> options) {
         if (options.isEmpty()) {
             throw new IllegalArgumentException("options Map cannot be empty");
         }
