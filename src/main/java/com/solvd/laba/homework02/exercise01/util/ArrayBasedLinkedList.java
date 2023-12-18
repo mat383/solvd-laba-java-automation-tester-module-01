@@ -28,14 +28,22 @@ public class ArrayBasedLinkedList<E> implements List<E> {
     /**
      * indices of next nodes
      */
-    private int[] nodesNextIndex;
+    private int[] nodesNextPointer;
     /**
      * indices of previous nodes
      */
-    private int[] nodesPrevIndex;
+    private int[] nodesPrevPointer;
     private boolean[] nodesIsEmpty;
-    private int firstNode;
-    private int lastNode;
+    /**
+     * position of first node in the internal array
+     * or EMPTY_NODE if list is empty
+     */
+    private int firstNodePointer;
+    /**
+     * position of last node in the internal array
+     * or EMPTY_NODE if list is empty
+     */
+    private int lastNodePointer;
     private int size;
     private final IAllocationStrategy allocationStrategy;
 
@@ -61,15 +69,15 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         }
 
         this.nodes = new Object[initialCapacity];
-        this.nodesNextIndex = new int[initialCapacity];
-        Arrays.fill(this.nodesNextIndex, EMPTY_NODE);
-        this.nodesPrevIndex = new int[initialCapacity];
-        Arrays.fill(this.nodesPrevIndex, EMPTY_NODE);
+        this.nodesNextPointer = new int[initialCapacity];
+        Arrays.fill(this.nodesNextPointer, EMPTY_NODE);
+        this.nodesPrevPointer = new int[initialCapacity];
+        Arrays.fill(this.nodesPrevPointer, EMPTY_NODE);
         this.nodesIsEmpty = new boolean[initialCapacity];
         Arrays.fill(this.nodesIsEmpty, true);
         this.size = 0;
-        this.firstNode = EMPTY_NODE;
-        this.lastNode = EMPTY_NODE;
+        this.firstNodePointer = EMPTY_NODE;
+        this.lastNodePointer = EMPTY_NODE;
         this.isNodesArraySorted = true;
     }
 
@@ -171,13 +179,13 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         int newIndex = findEmptyNode();
         this.nodes[newIndex] = element;
         this.nodesIsEmpty[newIndex] = false;
-        if (this.lastNode != EMPTY_NODE) {
-            this.nodesNextIndex[this.lastNode] = newIndex;
+        if (this.lastNodePointer != EMPTY_NODE) {
+            this.nodesNextPointer[this.lastNodePointer] = newIndex;
         }
-        this.nodesPrevIndex[newIndex] = this.lastNode;
-        this.nodesNextIndex[newIndex] = EMPTY_NODE;
-        this.lastNode = newIndex;
-        this.firstNode = this.firstNode == EMPTY_NODE ? newIndex : this.firstNode;
+        this.nodesPrevPointer[newIndex] = this.lastNodePointer;
+        this.nodesNextPointer[newIndex] = EMPTY_NODE;
+        this.lastNodePointer = newIndex;
+        this.firstNodePointer = this.firstNodePointer == EMPTY_NODE ? newIndex : this.firstNodePointer;
         this.size++;
 
         // if you didn't add the element at the end of internal array
@@ -205,21 +213,21 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
         int newIndex = findEmptyNode();
         int nextIndex = findInternalPosition(index);
-        int prevIndex = this.nodesPrevIndex[nextIndex];
+        int prevIndex = this.nodesPrevPointer[nextIndex];
 
         this.nodes[newIndex] = element;
         this.nodesIsEmpty[newIndex] = false;
-        this.nodesPrevIndex[newIndex] = prevIndex;
-        this.nodesNextIndex[newIndex] = nextIndex;
+        this.nodesPrevPointer[newIndex] = prevIndex;
+        this.nodesNextPointer[newIndex] = nextIndex;
 
         if (prevIndex != EMPTY_NODE) {
-            this.nodesNextIndex[prevIndex] = newIndex;
+            this.nodesNextPointer[prevIndex] = newIndex;
         } else {
-            this.firstNode = newIndex;
+            this.firstNodePointer = newIndex;
         }
 
         // next element cannot be empty, see first if
-        this.nodesPrevIndex[nextIndex] = newIndex;
+        this.nodesPrevPointer[nextIndex] = newIndex;
 
         this.size++;
         // there is no way to guarantee that internal array is ordered without calling checkIsNodesArraySorted
@@ -307,12 +315,12 @@ public class ArrayBasedLinkedList<E> implements List<E> {
     @Override
     public void clear() {
         Arrays.fill(this.nodes, null);
-        Arrays.fill(this.nodesNextIndex, EMPTY_NODE);
-        Arrays.fill(this.nodesPrevIndex, EMPTY_NODE);
+        Arrays.fill(this.nodesNextPointer, EMPTY_NODE);
+        Arrays.fill(this.nodesPrevPointer, EMPTY_NODE);
         Arrays.fill(this.nodesIsEmpty, true);
         this.size = 0;
-        this.firstNode = EMPTY_NODE;
-        this.lastNode = EMPTY_NODE;
+        this.firstNodePointer = EMPTY_NODE;
+        this.lastNodePointer = EMPTY_NODE;
         this.isNodesArraySorted = true;
     }
 
@@ -387,13 +395,13 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         }
         // try to find empty space after last item
         // use max to make sure that starting position is valid index
-        for (int i = Math.max(this.lastNode, 0); i < this.nodes.length; ++i) {
+        for (int i = Math.max(this.lastNodePointer, 0); i < this.nodes.length; ++i) {
             if (this.nodesIsEmpty[i]) {
                 return i;
             }
         }
         // try to find free space before last node
-        for (int i = 0; i < Math.max(this.lastNode, 0); ++i) {
+        for (int i = 0; i < Math.max(this.lastNodePointer, 0); ++i) {
             if (this.nodesIsEmpty[i]) {
                 return i;
             }
@@ -425,14 +433,14 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
         // transfer
         System.arraycopy(this.nodes, 0, newNodes, 0, this.nodes.length);
-        System.arraycopy(this.nodesNextIndex, 0, newNodesNextIndex, 0, this.nodesNextIndex.length);
-        System.arraycopy(this.nodesPrevIndex, 0, newNodesPrevIndex, 0, this.nodesPrevIndex.length);
+        System.arraycopy(this.nodesNextPointer, 0, newNodesNextIndex, 0, this.nodesNextPointer.length);
+        System.arraycopy(this.nodesPrevPointer, 0, newNodesPrevIndex, 0, this.nodesPrevPointer.length);
         System.arraycopy(this.nodesIsEmpty, 0, newNodesIsEmpty, 0, this.nodesIsEmpty.length);
 
         // reassign
         this.nodes = newNodes;
-        this.nodesNextIndex = newNodesNextIndex;
-        this.nodesPrevIndex = newNodesPrevIndex;
+        this.nodesNextPointer = newNodesNextIndex;
+        this.nodesPrevPointer = newNodesPrevIndex;
         this.nodesIsEmpty = newNodesIsEmpty;
     }
 
@@ -454,13 +462,13 @@ public class ArrayBasedLinkedList<E> implements List<E> {
             return index;
         }
 
-        int currentPos = this.firstNode;
+        int currentPos = this.firstNodePointer;
         int nodeIndex = 0;
         while (currentPos != EMPTY_NODE) {
             if (nodeIndex == index) {
                 return currentPos;
             }
-            currentPos = this.nodesNextIndex[currentPos];
+            currentPos = this.nodesNextPointer[currentPos];
             nodeIndex++;
         }
         return EMPTY_NODE;
@@ -475,13 +483,13 @@ public class ArrayBasedLinkedList<E> implements List<E> {
      */
     private int findInternalPosition(Object o) {
         // search directly in nodes array
-        int currentPos = this.firstNode;
+        int currentPos = this.firstNodePointer;
         int nodeIndex = 0;
         while (currentPos != EMPTY_NODE) {
             if (Objects.equals(o, this.nodes[currentPos])) {
                 return currentPos;
             }
-            currentPos = this.nodesNextIndex[currentPos];
+            currentPos = this.nodesNextPointer[currentPos];
             nodeIndex++;
         }
 
@@ -502,10 +510,10 @@ public class ArrayBasedLinkedList<E> implements List<E> {
         if (this.isNodesArraySorted) {
             return internalPosition;
         } else {
-            int currentNode = this.firstNode;
+            int currentNode = this.firstNodePointer;
             int index = 0;
             while (currentNode != internalPosition && currentNode != EMPTY_NODE) {
-                currentNode = this.nodesNextIndex[currentNode];
+                currentNode = this.nodesNextPointer[currentNode];
                 index++;
             }
             assert currentNode != EMPTY_NODE;
@@ -527,33 +535,33 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
         // check if you can guarantee that removal will not disturb order of nodes
         // (can only be guaranteed if removing last element)
-        if (internalIndex != this.lastNode) {
+        if (internalIndex != this.lastNodePointer) {
             this.isNodesArraySorted = false;
         }
 
-        int prevNodeIndex = this.nodesPrevIndex[internalIndex];
-        int nextNodeIndex = this.nodesNextIndex[internalIndex];
+        int prevNodeIndex = this.nodesPrevPointer[internalIndex];
+        int nextNodeIndex = this.nodesNextPointer[internalIndex];
 
         // set previous
         if (prevNodeIndex != EMPTY_NODE) {
-            this.nodesNextIndex[prevNodeIndex] = nextNodeIndex;
+            this.nodesNextPointer[prevNodeIndex] = nextNodeIndex;
         } else {
             // removing first node
-            this.firstNode = nextNodeIndex;
+            this.firstNodePointer = nextNodeIndex;
         }
         // set next
         if (nextNodeIndex != EMPTY_NODE) {
-            this.nodesPrevIndex[nextNodeIndex] = prevNodeIndex;
+            this.nodesPrevPointer[nextNodeIndex] = prevNodeIndex;
         } else {
             // removing last node
-            this.lastNode = prevNodeIndex;
+            this.lastNodePointer = prevNodeIndex;
         }
 
         // remove
         E removedObject = (E) this.nodes[internalIndex];
         this.nodes[internalIndex] = null;
-        this.nodesPrevIndex[internalIndex] = EMPTY_NODE;
-        this.nodesNextIndex[internalIndex] = EMPTY_NODE;
+        this.nodesPrevPointer[internalIndex] = EMPTY_NODE;
+        this.nodesNextPointer[internalIndex] = EMPTY_NODE;
         this.nodesIsEmpty[internalIndex] = true;
         this.size--;
 
@@ -562,13 +570,13 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
     private boolean checkIsNodesArraySorted() {
         int nodeListPosition = 0;
-        int currentNode = this.firstNode;
+        int currentNode = this.firstNodePointer;
         while (currentNode != EMPTY_NODE) {
             if (nodeListPosition != currentNode) {
                 return false;
             }
             nodeListPosition++;
-            currentNode = this.nodesNextIndex[currentNode];
+            currentNode = this.nodesNextPointer[currentNode];
         }
         return true;
     }
@@ -586,34 +594,34 @@ public class ArrayBasedLinkedList<E> implements List<E> {
             return;
         }
 
-        int currentNodeIndex = this.firstNode;
+        int currentNodeIndex = this.firstNodePointer;
         // for each node check if it is on right position
         // if not, swap it to the right position
         for (int i = 0; i < this.size; i++) {
             if (currentNodeIndex != i) {
                 // swap nodes at i and currentNodeIndex
                 // update neighboring nodes
-                if (this.nodesPrevIndex[currentNodeIndex] != EMPTY_NODE)
-                    this.nodesNextIndex[this.nodesPrevIndex[currentNodeIndex]] = i;
-                if (this.nodesNextIndex[currentNodeIndex] != EMPTY_NODE)
-                    this.nodesPrevIndex[this.nodesNextIndex[currentNodeIndex]] = i;
-                if (this.nodesPrevIndex[i] != EMPTY_NODE)
-                    this.nodesNextIndex[this.nodesPrevIndex[i]] = currentNodeIndex;
-                if (this.nodesNextIndex[i] != EMPTY_NODE)
-                    this.nodesPrevIndex[this.nodesNextIndex[i]] = currentNodeIndex;
+                if (this.nodesPrevPointer[currentNodeIndex] != EMPTY_NODE)
+                    this.nodesNextPointer[this.nodesPrevPointer[currentNodeIndex]] = i;
+                if (this.nodesNextPointer[currentNodeIndex] != EMPTY_NODE)
+                    this.nodesPrevPointer[this.nodesNextPointer[currentNodeIndex]] = i;
+                if (this.nodesPrevPointer[i] != EMPTY_NODE)
+                    this.nodesNextPointer[this.nodesPrevPointer[i]] = currentNodeIndex;
+                if (this.nodesNextPointer[i] != EMPTY_NODE)
+                    this.nodesPrevPointer[this.nodesNextPointer[i]] = currentNodeIndex;
 
                 // swap elements
                 E swapHelperObj = (E) this.nodes[i];
                 this.nodes[i] = this.nodes[currentNodeIndex];
                 this.nodes[currentNodeIndex] = swapHelperObj;
 
-                int swapHelperInt = this.nodesNextIndex[i];
-                this.nodesNextIndex[i] = this.nodesNextIndex[currentNodeIndex];
-                this.nodesNextIndex[currentNodeIndex] = swapHelperInt;
+                int swapHelperInt = this.nodesNextPointer[i];
+                this.nodesNextPointer[i] = this.nodesNextPointer[currentNodeIndex];
+                this.nodesNextPointer[currentNodeIndex] = swapHelperInt;
 
-                swapHelperInt = this.nodesPrevIndex[i];
-                this.nodesPrevIndex[i] = this.nodesPrevIndex[currentNodeIndex];
-                this.nodesPrevIndex[currentNodeIndex] = swapHelperInt;
+                swapHelperInt = this.nodesPrevPointer[i];
+                this.nodesPrevPointer[i] = this.nodesPrevPointer[currentNodeIndex];
+                this.nodesPrevPointer[currentNodeIndex] = swapHelperInt;
 
                 boolean swapHelperBool = this.nodesIsEmpty[i];
                 this.nodesIsEmpty[i] = this.nodesIsEmpty[currentNodeIndex];
@@ -622,13 +630,13 @@ public class ArrayBasedLinkedList<E> implements List<E> {
                 // updateCurrentNodeIndex
                 currentNodeIndex = i;
             }
-            currentNodeIndex = this.nodesNextIndex[currentNodeIndex];
+            currentNodeIndex = this.nodesNextPointer[currentNodeIndex];
         }
 
         // set first last node
         if (this.size > 0) {
-            this.firstNode = 0;
-            this.lastNode = this.size - 1;
+            this.firstNodePointer = 0;
+            this.lastNodePointer = this.size - 1;
         }
         this.isNodesArraySorted = true;
     }
@@ -643,16 +651,49 @@ public class ArrayBasedLinkedList<E> implements List<E> {
          * describes state of iterator with regard to set and remove operations
          */
         public enum State {
-            CANNOT_SET_OR_REMOVE,
-            AFTER_NEXT,
-            AFTER_PREV
+            CANNOT_SET_OR_REMOVE {
+                @Override
+                public int getRelevantPointerForSetRemove(int nextElementPointer, int lastElementPointer, int[] nodesPrevPointer) {
+                    throw new UnsupportedOperationException(this.toString() + " cannot do this operation");
+                }
+            },
+            AFTER_NEXT {
+                @Override
+                public int getRelevantPointerForSetRemove(int nextElementPointer, int lastElementPointer, int[] nodesPrevPointer) {
+                    if (nextElementPointer == EMPTY_NODE) {
+                        return lastElementPointer;
+                    } else {
+                        return nodesPrevPointer[nextElementPointer];
+                    }
+                }
+            },
+            AFTER_PREV {
+                @Override
+                public int getRelevantPointerForSetRemove(int nextElementPointer, int lastElementPointer, int[] nodesPrevPointer) {
+                    return nextElementPointer;
+                }
+            };
+
+            /**
+             * computes relevant internal pointer for set and remove operations
+             * from current cursor position
+             *
+             * @param nextElementPointer
+             * @param lastElementPointer
+             * @param nodesPrevPointer
+             * @return
+             */
+            public abstract int getRelevantPointerForSetRemove(
+                    int nextElementPointer,
+                    int lastElementPointer,
+                    int[] nodesPrevPointer);
         }
 
         // TODO rename them to element after cursor pointer or sth
         /**
          * internal position of next element, can be EMPTY_NODE if list is empty
          */
-        private int nextElementIndex;
+        private int nextElementPointer;
         /**
          * position of the next element on the list (it's index)
          */
@@ -664,12 +705,12 @@ public class ArrayBasedLinkedList<E> implements List<E> {
          * index of the element before the first, used to narrow scope of iteration
          * set to EMPTY_NODE to start iteration from the first element
          */
-        private int elementBeforeFirstIndex;
+        private int elementBeforeFirstPointer;
         /**
          * index of the element after the last, used to narrow scope of iteration
          * set to EMPTY_NODE to iterate to the end
          */
-        private int elementAfterLastIndex;
+        private int elementAfterLastPointer;
 
         public ArrayBasedLinkedListIterator() {
             this(0, EMPTY_NODE, EMPTY_NODE);
@@ -683,60 +724,60 @@ public class ArrayBasedLinkedList<E> implements List<E> {
          * creates iterator that is restricted to nodes
          * between nodeBeforeFirst and nodeAfterLast (exclusive)
          *
-         * @param relativeIndex   index of first element that would be returned by next
-         *                        relative to nodeBeforeFirst, i.e. if relativeIndex
-         *                        is 0 then first element returned by next will be
-         *                        the element after nodeBeforeFirst
-         * @param nodeBeforeFirst internal position of element before first
-         *                        accessible element (or EMPTY_ELEMENT if no restrictions)
-         * @param nodeAfterLast   internal position of element after last
-         *                        accessible element (or EMPTY_ELEMENT if no restrictions)
+         * @param relativeIndex          index of first element that would be returned by next
+         *                               relative to nodeBeforeFirst, i.e. if relativeIndex
+         *                               is 0 then first element returned by next will be
+         *                               the element after nodeBeforeFirstPointer
+         * @param nodeBeforeFirstPointer internal position of element before first
+         *                               accessible element (or EMPTY_ELEMENT if no restrictions)
+         * @param nodeAfterLastPointer   internal position of element after last
+         *                               accessible element (or EMPTY_ELEMENT if no restrictions)
          */
-        private ArrayBasedLinkedListIterator(int relativeIndex, int nodeBeforeFirst, int nodeAfterLast) {
+        private ArrayBasedLinkedListIterator(int relativeIndex, int nodeBeforeFirstPointer, int nodeAfterLastPointer) {
             // TODO rewrite with optional?
-            int nodeBeforeFirstListPosition = nodeBeforeFirst == EMPTY_NODE
+            int nodeBeforeFirstIndex = nodeBeforeFirstPointer == EMPTY_NODE
                     ? EMPTY_NODE
-                    : ArrayBasedLinkedList.this.findListPosition(nodeBeforeFirst);
+                    : ArrayBasedLinkedList.this.findListPosition(nodeBeforeFirstPointer);
 
-            int nodeAfterLastListPosition = nodeAfterLast == EMPTY_NODE
+            int nodeAfterLastIndex = nodeAfterLastPointer == EMPTY_NODE
                     ? EMPTY_NODE
-                    : ArrayBasedLinkedList.this.findListPosition(nodeAfterLast);
+                    : ArrayBasedLinkedList.this.findListPosition(nodeAfterLastPointer);
 
-            int absoluteIndex = nodeBeforeFirst == EMPTY_NODE
+            int absoluteIndex = nodeBeforeFirstPointer == EMPTY_NODE
                     ? relativeIndex
-                    : nodeBeforeFirstListPosition + 1 + relativeIndex;
+                    : nodeBeforeFirstIndex + 1 + relativeIndex;
 
             // in case list is empty get first element from beginning pointer
             // to avoid out of bound exception
-            this.nextElementIndex = absoluteIndex == 0
-                    ? ArrayBasedLinkedList.this.firstNode
+            this.nextElementPointer = absoluteIndex == 0
+                    ? ArrayBasedLinkedList.this.firstNodePointer
                     : findInternalPosition(absoluteIndex);
             this.nextListIndex = relativeIndex;
             this.state = State.CANNOT_SET_OR_REMOVE;
-            this.elementBeforeFirstIndex = nodeBeforeFirst;
-            this.elementAfterLastIndex = nodeAfterLast;
+            this.elementBeforeFirstPointer = nodeBeforeFirstPointer;
+            this.elementAfterLastPointer = nodeAfterLastPointer;
 
             // check if index is within scope
             if (relativeIndex < 0) {
                 throw new IndexOutOfBoundsException("relativeIndex cannot be negative. relativeIndex == " + relativeIndex);
             }
-            if (nodeAfterLastListPosition != EMPTY_NODE
-                    && nodeAfterLastListPosition <= relativeIndex) {
+            if (nodeAfterLastIndex != EMPTY_NODE
+                    && nodeAfterLastIndex <= relativeIndex) {
                 throw new IndexOutOfBoundsException("relativeIndex out of scope. relativeIndex == " + relativeIndex);
             }
 
             // check if scope is correct
-            if (nodeBeforeFirstListPosition != EMPTY_NODE
-                    && nodeBeforeFirstListPosition != EMPTY_NODE
-                    && nodeAfterLastListPosition <= nodeBeforeFirstListPosition) {
+            if (nodeBeforeFirstIndex != EMPTY_NODE
+                    && nodeBeforeFirstIndex != EMPTY_NODE
+                    && nodeAfterLastIndex <= nodeBeforeFirstIndex) {
                 throw new IllegalArgumentException("Wrong scope, beginning is after end.");
             }
         }
 
         @Override
         public boolean hasNext() {
-            return this.nextElementIndex != this.elementAfterLastIndex
-                    && this.nextElementIndex != EMPTY_NODE;
+            return this.nextElementPointer != this.elementAfterLastPointer
+                    && this.nextElementPointer != EMPTY_NODE;
         }
 
         @Override
@@ -750,9 +791,9 @@ public class ArrayBasedLinkedList<E> implements List<E> {
                 throw new NoSuchElementException("Collection have no next element");
             }
             // get next element
-            E nextElement = (E) ArrayBasedLinkedList.this.nodes[this.nextElementIndex];
+            E nextElement = (E) ArrayBasedLinkedList.this.nodes[this.nextElementPointer];
             // move pointers to next element
-            this.nextElementIndex = ArrayBasedLinkedList.this.nodesNextIndex[this.nextElementIndex];
+            this.nextElementPointer = ArrayBasedLinkedList.this.nodesNextPointer[this.nextElementPointer];
             this.nextListIndex++;
 
             this.state = State.AFTER_NEXT;
@@ -775,27 +816,27 @@ public class ArrayBasedLinkedList<E> implements List<E> {
             if (!hasPrevious()) {
                 throw new NoSuchElementException("Collection have no previous element");
             }
-            this.nextElementIndex = ArrayBasedLinkedList.this.nodesPrevIndex[this.nextElementIndex];
+            this.nextElementPointer = ArrayBasedLinkedList.this.nodesPrevPointer[this.nextElementPointer];
             this.nextListIndex--;
 
             this.state = State.AFTER_PREV;
 
-            return (E) ArrayBasedLinkedList.this.nodes[this.nextElementIndex];
+            return (E) ArrayBasedLinkedList.this.nodes[this.nextElementPointer];
         }
 
         @Override
         public void add(E e) {
-            if (this.nextElementIndex == EMPTY_NODE) {
+            if (this.nextElementPointer == EMPTY_NODE) {
                 // adding to the end of the list
                 ArrayBasedLinkedList.this.add(e);
             } else {
                 // adding in the middle or in the beginning of the list
                 // FIXME quick and dirty implementation, improve
                 // potential solution would be to store offset
-                if (this.elementBeforeFirstIndex == EMPTY_NODE) {
+                if (this.elementBeforeFirstPointer == EMPTY_NODE) {
                     ArrayBasedLinkedList.this.add(this.nextListIndex, e);
                 } else {
-                    int offset = ArrayBasedLinkedList.this.findListPosition(this.elementBeforeFirstIndex) + 1;
+                    int offset = ArrayBasedLinkedList.this.findListPosition(this.elementBeforeFirstPointer) + 1;
                     ArrayBasedLinkedList.this.add(this.nextListIndex + offset, e);
                 }
             }
@@ -805,51 +846,35 @@ public class ArrayBasedLinkedList<E> implements List<E> {
 
         @Override
         public void remove() {
-            switch (this.state) {
-                case CANNOT_SET_OR_REMOVE -> {
-                    throw new IllegalStateException("Wrong state, cannot remove element");
-                }
-                case AFTER_NEXT -> {
-                    // remove element before cursor
-                    int nodeToRemove = EMPTY_NODE;
-                    // check if iteration reached end of the list
-                    if (this.nextElementIndex == EMPTY_NODE) {
-                        nodeToRemove = ArrayBasedLinkedList.this.lastNode;
-                    } else {
-                        nodeToRemove = ArrayBasedLinkedList.this.nodesPrevIndex[this.nextElementIndex];
-                    }
-                    ArrayBasedLinkedList.this.removeAtIntervalPosition(nodeToRemove);
-                    this.nextListIndex--;
-                }
-                case AFTER_PREV -> {
-                    // remove element after cursor
-                    int nodeToRemove = this.nextElementIndex;
-                    this.nextElementIndex = ArrayBasedLinkedList.this.nodesNextIndex[this.nextElementIndex];
-                    ArrayBasedLinkedList.this.removeAtIntervalPosition(nodeToRemove);
-                }
+            if (this.state == State.CANNOT_SET_OR_REMOVE) {
+                throw new IllegalStateException("Wrong state, cannot remove element");
             }
+
+            int nodeToRemove = this.state.getRelevantPointerForSetRemove(
+                    this.nextElementPointer,
+                    ArrayBasedLinkedList.this.lastNodePointer,
+                    ArrayBasedLinkedList.this.nodesPrevPointer);
+
+            ArrayBasedLinkedList.this.removeAtIntervalPosition(nodeToRemove);
+
+            if (this.state == State.AFTER_NEXT) {
+                this.nextListIndex--;
+            }
+
             this.state = State.CANNOT_SET_OR_REMOVE;
         }
 
         @Override
         public void set(E e) {
-            int nodeToSet = EMPTY_NODE;
-            switch (this.state) {
-                case CANNOT_SET_OR_REMOVE -> {
-                    throw new IllegalStateException("Wrong state, cannot set element");
-                }
-                case AFTER_NEXT -> {
-                    // check if iteration reached end of the list
-                    if (this.nextElementIndex == EMPTY_NODE) {
-                        nodeToSet = ArrayBasedLinkedList.this.lastNode;
-                    } else {
-                        nodeToSet = ArrayBasedLinkedList.this.nodesPrevIndex[this.nextElementIndex];
-                    }
-                }
-                case AFTER_PREV -> {
-                    nodeToSet = this.nextElementIndex;
-                }
+            if (this.state == State.CANNOT_SET_OR_REMOVE) {
+                throw new IllegalStateException("Wrong state, cannot set element");
             }
+
+            int nodeToSet = this.state.getRelevantPointerForSetRemove(
+                    this.nextElementPointer,
+                    ArrayBasedLinkedList.this.lastNodePointer,
+                    ArrayBasedLinkedList.this.nodesPrevPointer);
+
             ArrayBasedLinkedList.this.nodes[nodeToSet] = e;
         }
     }
@@ -878,7 +903,7 @@ public class ArrayBasedLinkedList<E> implements List<E> {
                 this.nodeBeforeFirst = EMPTY_NODE;
             } else {
                 int firstNodeIndex = ArrayBasedLinkedList.this.findInternalPosition(fromIndex);
-                this.nodeBeforeFirst = ArrayBasedLinkedList.this.nodesPrevIndex[firstNodeIndex];
+                this.nodeBeforeFirst = ArrayBasedLinkedList.this.nodesPrevPointer[firstNodeIndex];
             }
             if (toIndex == ArrayBasedLinkedList.this.size) {
                 this.nodeAfterLast = EMPTY_NODE;
