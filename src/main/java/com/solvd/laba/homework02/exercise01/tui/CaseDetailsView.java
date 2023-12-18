@@ -14,10 +14,10 @@ public class CaseDetailsView implements View {
     private static final Logger LOGGER = LogManager.getLogger(LegalOffice.class.getName());
     private final LegalOffice legalOffice;
     private final LegalCase legalCase;
-    private final ILegalCasesFilter casesFilter;
+    private final IListFilter casesFilter;
     private final Widgets widgets;
 
-    public CaseDetailsView(LegalOffice legalOffice, LegalCase legalCase, Widgets widgets, ILegalCasesFilter casesFilter) {
+    public CaseDetailsView(LegalOffice legalOffice, LegalCase legalCase, Widgets widgets, IListFilter casesFilter) {
         this.legalOffice = legalOffice;
         this.legalCase = legalCase;
         this.casesFilter = casesFilter;

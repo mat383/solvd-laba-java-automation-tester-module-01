@@ -103,7 +103,7 @@ public class Main {
 
         // parse arguments
         ArgumentsParser argumentsParser = new ArgumentsParser(args);
-        ILegalCasesFilter casesFilter = new LegalCasesNoFilter();
+        IListFilter casesFilter = new LegalCasesNoFilter();
         View mainView = null;
 
         if (argumentsParser.flagPresent(ArgumentsParser.Flags.HELP)) {
