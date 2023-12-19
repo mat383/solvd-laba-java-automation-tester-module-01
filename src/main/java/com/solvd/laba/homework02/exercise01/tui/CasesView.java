@@ -113,7 +113,7 @@ public class CasesView implements View {
         Address appointmentAddress = null;
         while (appointmentAddress == null) {
             try {
-                appointmentAddress = this.widgets.promptForAddress("provide address: ");
+                appointmentAddress = this.widgets.promptForAddress("provide address: ", legalOffice.getAddressBook());
             } catch (AddressDoesntExistException e) {
                 System.out.println("please provide valid address");
             }

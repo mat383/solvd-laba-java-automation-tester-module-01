@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -22,6 +23,69 @@ public class Main {
         LOGGER.info("Main started");
         LegalOffice office = new LegalOffice();
 
+
+        // load address book
+        try {
+            office.loadAddressBook(
+                    office.getClass().getClassLoader().getResource("adressBook.csv").toURI());
+        } catch (URISyntaxException e) {
+            LOGGER.error("Unable to get addressbook file location: " + e);
+        }
+
+        fillOffice(office);
+
+
+        // parse arguments
+        ArgumentsParser argumentsParser = new ArgumentsParser(args);
+        IListFilter casesFilter = new LegalCasesNoFilter();
+        View mainView = null;
+
+        if (argumentsParser.flagPresent(ArgumentsParser.Flags.HELP)) {
+            printHelp();
+            return;
+        }
+        if (argumentsParser.flagPresent(ArgumentsParser.Flags.PERSON)) {
+            String personId = argumentsParser.getFlagValue(ArgumentsParser.Flags.PERSON);
+            IEntity person = office.findClient(iEntity -> iEntity instanceof Person p
+                    ? p.getId().equals(personId)
+                    : false).orElseThrow(() -> new NoSuchElementException("Person with specified id not found"));
+            casesFilter = new LegalCasesClientFilter(person);
+        }
+
+        if (argumentsParser.flagPresent(ArgumentsParser.Flags.UPCOMING_APPOINTMENTS)) {
+            // show upcoming appointments
+            mainView = new UpcomingAppointmentsView(office, new Widgets(), casesFilter);
+        } else {
+            // run in interactive mode
+            mainView = new CasesView(office, new Widgets(), casesFilter);
+        }
+
+        // show ui
+        mainView.show();
+    }
+
+    public static void printHelp() {
+        String helpString = """
+                usage: class [OPTIONS]
+                                
+                options:
+                  -%s, --%s
+                      print this help
+                  -%s, --%s <PERSON-ID>
+                      filter UI to show only cases related to specified user
+                  -%s, --%s
+                      show upcoming appointments and quit"""
+                .formatted(
+                        ArgumentsParser.Flags.HELP.getShortName(),
+                        ArgumentsParser.Flags.HELP.getLongName(),
+                        ArgumentsParser.Flags.PERSON.getShortName(),
+                        ArgumentsParser.Flags.PERSON.getLongName(),
+                        ArgumentsParser.Flags.UPCOMING_APPOINTMENTS.getShortName(),
+                        ArgumentsParser.Flags.UPCOMING_APPOINTMENTS.getLongName());
+        System.out.println(helpString);
+    }
+
+    public static void fillOffice(LegalOffice office) {
         IEntity clientA = new Person("0001", Person.Sex.MALE, "John", "Smith");
         IEntity clientB = LegalOfficeGenerator.generatePerson();
         IEntity clientC = LegalOfficeGenerator.generateCompany();
@@ -99,56 +163,5 @@ public class Main {
         office.addCase(LegalOfficeGenerator.generateCase());
         office.addCase(LegalOfficeGenerator.generateCase());
         office.addCase(LegalOfficeGenerator.generateCase());
-
-
-        // parse arguments
-        ArgumentsParser argumentsParser = new ArgumentsParser(args);
-        IListFilter casesFilter = new LegalCasesNoFilter();
-        View mainView = null;
-
-        if (argumentsParser.flagPresent(ArgumentsParser.Flags.HELP)) {
-            printHelp();
-            return;
-        }
-        if (argumentsParser.flagPresent(ArgumentsParser.Flags.PERSON)) {
-            String personId = argumentsParser.getFlagValue(ArgumentsParser.Flags.PERSON);
-            IEntity person = office.findClient(iEntity -> iEntity instanceof Person p
-                    ? p.getId().equals(personId)
-                    : false).orElseThrow(() -> new NoSuchElementException("Person with specified id not found"));
-            casesFilter = new LegalCasesClientFilter(person);
-        }
-
-        if (argumentsParser.flagPresent(ArgumentsParser.Flags.UPCOMING_APPOINTMENTS)) {
-            // show upcoming appointments
-            mainView = new UpcomingAppointmentsView(office, new Widgets(), casesFilter);
-        } else {
-            // run in interactive mode
-            mainView = new CasesView(office, new Widgets(), casesFilter);
-        }
-
-        mainView.show();
     }
-
-    public static void printHelp() {
-        String helpString = """
-                usage: class [OPTIONS]
-                                
-                options:
-                  -%s, --%s
-                      print this help
-                  -%s, --%s <PERSON-ID>
-                      filter UI to show only cases related to specified user
-                  -%s, --%s
-                      show upcoming appointments and quit"""
-                .formatted(
-                        ArgumentsParser.Flags.HELP.getShortName(),
-                        ArgumentsParser.Flags.HELP.getLongName(),
-                        ArgumentsParser.Flags.PERSON.getShortName(),
-                        ArgumentsParser.Flags.PERSON.getLongName(),
-                        ArgumentsParser.Flags.UPCOMING_APPOINTMENTS.getShortName(),
-                        ArgumentsParser.Flags.UPCOMING_APPOINTMENTS.getLongName());
-        System.out.println(helpString);
-    }
-
-
 }

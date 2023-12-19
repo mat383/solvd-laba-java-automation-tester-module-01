@@ -87,6 +87,30 @@ public class Widgets {
         return new Address(country, city, postalCode, street, streetNumber, apartmentNumber);
     }
 
+    /**
+     * prompts for address with option to choose from addressBook
+     *
+     * @param prompt
+     * @param addressBook
+     * @return
+     */
+    public Address promptForAddress(String prompt, Map<String, Address> addressBook) throws AddressDoesntExistException {
+        final String YES = "yes";
+        final String NO = "no";
+        final String[] YES_NO = {YES, NO};
+        String decision = selectFromArray("Select from address book? (1: %s/2: %s) ".formatted(YES, NO), YES_NO);
+        if (decision.equals(NO) || addressBook.isEmpty()) {
+            return promptForAddress(prompt);
+        } else {
+            String[] addressBookEntries = addressBook.keySet().toArray(new String[0]);
+            this.<String>enumerateArray("Possible addresses: ", addressBookEntries, e -> e);
+            String addressName = selectFromArray(
+                    "Select address book entry: ",
+                    addressBook.keySet().toArray(new String[0]));
+            return addressBook.get(addressName);
+        }
+    }
+
     public String promptForString(String prompt) {
         Scanner scanner = new Scanner(System.in);
         System.out.print(prompt);
